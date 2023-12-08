@@ -19,9 +19,9 @@ import ShareIcon from "@mui/icons-material/Share";
 import { useRef, useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import BillPanel from "./BillPanel";
-import MemberPanel from "./MemberPanel";
-import ResultPanel from "./ResultPanel";
+import BillPanel from "./BillPanel/BillPanel";
+import MemberPanel from "./MemberPanel/MemberPanel";
+import ResultPanel from "./ResultPanel/ResultPanel";
 
 function RoomPage() {
   const { roomId } = useParams();
@@ -35,7 +35,8 @@ function RoomPage() {
     <Box className="min-h-screen max-h-screen grid grid-rows-[64px_1fr]">
       <AppBar
         position="static"
-        className="justify-center pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] "
+        className="justify-center 
+          pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] "
       >
         <Toolbar>
           <div className="flex-auto">

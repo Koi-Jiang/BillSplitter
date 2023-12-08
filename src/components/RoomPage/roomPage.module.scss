@@ -15,7 +15,7 @@
     }
 
     // Content
-    & > div {
+    & > :nth-child(2) {
       height: calc(100% - 48px);
       overflow-y: auto;
     }
