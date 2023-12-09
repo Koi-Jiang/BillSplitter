@@ -16,7 +16,8 @@ function FrontPage() {
   return (
     <Container
       maxWidth="md"
-      className="flex flex-col min-h-screen min-h-[100dvh] items-center justify-center"
+      className="flex flex-col min-h-screen min-h-[100dvh] 
+        items-center justify-center"
     >
       <Typography variant="h5" component="h1" gutterBottom>
         Create a Room

@@ -1,24 +1,26 @@
 import { AppBar, IconButton, List, Toolbar, Typography } from "@mui/material";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import AddIcon from "@mui/icons-material/Add";
 import MemberListItem from "./MemberListItem";
 import { useState } from "react";
-
+import MemberEditDialog from "../MemberEditDialog/MemberEditDialog";
 
 function MemberPanel() {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
+
+  function handleMemberEditConfirm(memberName) {
+    setOpenDialog(false);
+    // and new member to memberList(not create yet)
+  }
+
   return (
     <>
       <AppBar position="static">
         <Toolbar>
           <Typography component="h2" variant="h6" className="flex-auto">
-            Member
+            Members
           </Typography>
           <IconButton onClick={() => setOpenDialog(true)}>
             <AddIcon />
-          </IconButton>
-          <IconButton>
-            <MoreVertIcon />
           </IconButton>
         </Toolbar>
       </AppBar>
@@ -30,9 +32,16 @@ function MemberPanel() {
         <MemberListItem name="Kelly" />
         <MemberListItem name="this bill is notooo that bill" />
         <MemberListItem name="this bill ioos not that bill" />
-        <MemberListItem name="this obill is not that ================================== bill" />
+        <MemberListItem name="this obill is not that =======++++\
+          ========================== bill" />
         <MemberListItem name="this boill is not that bill" />
       </List>
+
+      <MemberEditDialog
+        openDialog={openDialog}
+        onCancel={() => setOpenDialog(false)}
+        onConfirm={(memberName) => handleMemberEditConfirm(memberName)}
+      />
     </>
   );
 }

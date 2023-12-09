@@ -12,11 +12,16 @@ export interface MemberEditArgs {
   name?: string;
   openDialog: boolean;
   onCancel: () => void;
-  onDone: (memberName: string) => void;
+  onConfirm: (memberName: string) => void;
 }
 
-const MemberEditDialog: FC<MemberEditArgs> = ({ openDialog, name }) => {
-  const [memberName, setMemberName] = useState<string>(name ? name : "");
+const MemberEditDialog: FC<MemberEditArgs> = ({
+  openDialog,
+  name,
+  onCancel,
+  onConfirm,
+}) => {
+  const [memberName, setMemberName] = useState<string>(name ?? "");
 
   return (
     <Dialog open={openDialog} maxWidth="xs" fullWidth>
@@ -34,8 +39,16 @@ const MemberEditDialog: FC<MemberEditArgs> = ({ openDialog, name }) => {
         />
       </DialogContent>
       <DialogActions>
-        <Button variant="text">Cancel</Button>
-        <Button variant="text" disabled={memberName === ""}>Done</Button>
+        <Button variant="text" onClick={onCancel}>
+          Cancel
+        </Button>
+        <Button
+          variant="text"
+          onClick={() => onConfirm(memberName)}
+          disabled={memberName === ""}
+        >
+          Done
+        </Button>
       </DialogActions>
     </Dialog>
   );

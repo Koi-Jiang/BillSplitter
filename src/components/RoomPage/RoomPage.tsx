@@ -19,9 +19,9 @@ import ShareIcon from "@mui/icons-material/Share";
 import { useRef, useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import BillPanel from "./BillPanel/BillPanel";
-import MemberPanel from "./MemberPanel/MemberPanel";
-import ResultPanel from "./ResultPanel/ResultPanel";
+import MemberPanel from "../MemberPanel/MemberPanel";
+import BillPanel from "../BillPanel/BillPanel";
+import ResultPanel from "../ResultPanel/ResultPanel";
 
 function RoomPage() {
   const { roomId } = useParams();
