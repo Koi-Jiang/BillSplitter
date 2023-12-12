@@ -1,6 +1,7 @@
 import { ListItem, Typography, useTheme } from "@mui/material";
 import { FC } from "react";
 import EastIcon from "@mui/icons-material/East";
+import { numberFormatter } from "../utils/numberFormatter";
 
 export interface ResultListItemArgs {
   payer: string;
@@ -38,8 +39,7 @@ const ResultListItem: FC<ResultListItemArgs> = ({ payer, payee, amount }) => {
         fontWeight="normal"
         color={palette.secondary.main}
       >
-        ${(amount / 100).toFixed(0)}.
-        {(amount / 100).toString().split(".")[1].padEnd(2, "0")}
+        {numberFormatter(amount)}
       </Typography>
     </ListItem>
   );

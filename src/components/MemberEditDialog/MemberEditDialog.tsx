@@ -10,13 +10,13 @@ import { FC, useState } from "react";
 
 export interface MemberEditArgs {
   name?: string;
-  openDialog: boolean;
+  isOpen: boolean;
   onCancel: () => void;
   onConfirm: (memberName: string) => void;
 }
 
 const MemberEditDialog: FC<MemberEditArgs> = ({
-  openDialog,
+  isOpen,
   name,
   onCancel,
   onConfirm,
@@ -24,7 +24,7 @@ const MemberEditDialog: FC<MemberEditArgs> = ({
   const [memberName, setMemberName] = useState<string>(name ?? "");
 
   return (
-    <Dialog open={openDialog} maxWidth="xs" fullWidth>
+    <Dialog open={isOpen} maxWidth="xs" fullWidth>
       <DialogTitle>Member</DialogTitle>
       <DialogContent>
         <TextField

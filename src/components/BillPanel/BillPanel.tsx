@@ -2,8 +2,19 @@ import { AppBar, IconButton, List, Toolbar, Typography } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import AddIcon from "@mui/icons-material/Add";
 import BillListItem from "./BillListItem";
+import BillEditDialog from "../BillEditDialog/BillEditDialog";
+import { useState } from "react";
+
+
+// FIX:
 
 function BillPanel() {
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+
+  function handleBillChange() {
+    setIsDialogOpen(false);
+  }
+
   return (
     <>
       <AppBar position="static">
@@ -12,7 +23,7 @@ function BillPanel() {
             Bills
           </Typography>
           <IconButton>
-            <AddIcon />
+            <AddIcon onClick={() => setIsDialogOpen(true)}/>
           </IconButton>
           <IconButton>
             <MoreVertIcon />
@@ -21,20 +32,29 @@ function BillPanel() {
       </AppBar>
       <List>
         <BillListItem
-          amount={656}
+          amount={0.1}
           payer="Kelly"
           lenders={["bill", "bill2", "hie", "hihdfg"]}
           description="jilihl0"
-          date={242424242}
-        />{" "}
+        />
         <BillListItem
-          amount={656333.533}
+          amount={23.535}
           payer="Kelly"
           lenders={["bill", "hihdfg"]}
           description="jilihl0"
-          date={242424242}
-        />{" "}
+        />
+        <BillListItem
+          amount={78778778.78}
+          payer="Kelly"
+          lenders={["bill", "hihdfg"]}
+          description="jilihl0"
+        />
       </List>
+      <BillEditDialog 
+        isOpen={isDialogOpen}
+        onCancel={() => setIsDialogOpen(false)}
+        onConfirm={() => handleBillChange()}
+      />
     </>
   );
 }

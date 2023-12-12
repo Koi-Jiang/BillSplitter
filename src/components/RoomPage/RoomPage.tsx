@@ -28,6 +28,8 @@ function RoomPage() {
   const theme = useTheme();
   const mediumAndUp = useMediaQuery(() => theme.breakpoints.up("md"));
 
+  // ref 1. bind DOM node(htmlElement)
+  // 2. store mutable element which won't effect page change
   const shareMenuAnchor = useRef<HTMLButtonElement>(null);
   const [shareMenuOpen, setShareMenuOpen] = useState<boolean>(false);
 

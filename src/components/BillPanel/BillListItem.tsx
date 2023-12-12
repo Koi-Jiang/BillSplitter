@@ -1,12 +1,12 @@
 import { ListItem, ListItemText, useTheme } from "@mui/material";
 import { FC, useMemo } from "react";
+import { numberFormatter } from "../utils/numberFormatter";
 
 export interface BillListItemArgs {
   payer: string;
   lenders: string[];
   amount: number;
   description: string;
-  date: number;
 }
 
 const BillListItem: FC<BillListItemArgs> = (args) => {
@@ -39,7 +39,7 @@ const BillListItem: FC<BillListItemArgs> = (args) => {
         }}
       />
       <ListItemText
-        primary={`$${args.amount}`}
+        primary={numberFormatter(args.amount)}
         className="flex-none"
         primaryTypographyProps={{
           variant: "h4",

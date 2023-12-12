@@ -5,10 +5,10 @@ import { useState } from "react";
 import MemberEditDialog from "../MemberEditDialog/MemberEditDialog";
 
 function MemberPanel() {
-  const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
   function handleMemberEditConfirm(memberName) {
-    setOpenDialog(false);
+    setIsDialogOpen(false);
     // and new member to memberList(not create yet)
   }
 
@@ -19,7 +19,7 @@ function MemberPanel() {
           <Typography component="h2" variant="h6" className="flex-auto">
             Members
           </Typography>
-          <IconButton onClick={() => setOpenDialog(true)}>
+          <IconButton onClick={() => setIsDialogOpen(true)}>
             <AddIcon />
           </IconButton>
         </Toolbar>
@@ -38,8 +38,8 @@ function MemberPanel() {
       </List>
 
       <MemberEditDialog
-        openDialog={openDialog}
-        onCancel={() => setOpenDialog(false)}
+        isOpen={isDialogOpen}
+        onCancel={() => setIsDialogOpen(false)}
         onConfirm={(memberName) => handleMemberEditConfirm(memberName)}
       />
     </>
