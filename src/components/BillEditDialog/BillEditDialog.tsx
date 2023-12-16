@@ -7,9 +7,10 @@ import {
   DialogTitle,
   TextField,
 } from "@mui/material";
-import { FC, useMemo, useState } from "react";
+import { FC, useState } from "react";
 import { BillListItemArgs } from "../BillPanel/BillListItem";
 import MoneyInput from "../MoneyInput/MoneyInput";
+import ValidatedTextField from "../common/ValidatedTextField";
 
 export interface BillEditArgs {
   billInfo?: BillListItemArgs;
@@ -25,10 +26,11 @@ const BillEditDialog: FC<BillEditArgs> = ({
   onConfirm,
 }) => {
   const [bill, setBill] = useState<BillListItemArgs>(
-    billInfo ?? { amount: 10, description: "", payer: "", lenders: [] },
+    billInfo ?? { amount: 0, description: "", payer: "", lenders: [] },
   );
 
   function handleAmountChange(value: number) {
+    moneyValidator(value);
     setBill({ ...bill, amount: value });
   }
   function handleDescriptionChange(value: string) {
@@ -41,16 +43,28 @@ const BillEditDialog: FC<BillEditArgs> = ({
     setBill({ ...bill, lenders: value });
   }
 
+  const [moneyHelperText, setMoneyHelperText] = useState<string>("");
+  function moneyValidator(value?: number): void {
+    if (!value || value === 0) {
+      setMoneyHelperText("Amount can't be empty");
+    }
+    else {
+      setMoneyHelperText("");
+    }
+  }
 
   // FIX:
   const memberArr = ["bulsafajhlf", "sadlfh", "asfhl"];
-
 
   return (
     <Dialog open={isOpen} maxWidth="xs" fullWidth>
       <DialogTitle>Bill</DialogTitle>
       <DialogContent>
-        <TextField
+        <ValidatedTextField
+          immediate={true}
+          validator={(value) =>
+            value === "" ? "Please enter a description" : ""
+          }
           label="Description"
           fullWidth
           required
@@ -60,7 +74,13 @@ const BillEditDialog: FC<BillEditArgs> = ({
           value={bill.description}
           onChange={(e) => handleDescriptionChange(e.target.value)}
         />
-        <MoneyInput value={bill.amount} onChange={handleAmountChange} />
+        <MoneyInput
+          immediate={true}
+          label="Amount"
+          value={bill.amount}
+          onChange={handleAmountChange}
+          helperText={moneyHelperText}
+        />
         <Autocomplete
           fullWidth
           options={memberArr}

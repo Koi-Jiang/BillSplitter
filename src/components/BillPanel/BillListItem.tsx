@@ -1,6 +1,6 @@
 import { ListItem, ListItemText, useTheme } from "@mui/material";
 import { FC, useMemo } from "react";
-import { numberFormatter } from "../utils/numberFormatter";
+import { numberFormatter } from "../../utils/numberFormatter";
 
 export interface BillListItemArgs {
   payer: string;

@@ -1,7 +1,7 @@
 import { ListItem, Typography, useTheme } from "@mui/material";
 import { FC } from "react";
 import EastIcon from "@mui/icons-material/East";
-import { numberFormatter } from "../utils/numberFormatter";
+import { numberFormatter } from "../../utils/numberFormatter";
 
 export interface ResultListItemArgs {
   payer: string;

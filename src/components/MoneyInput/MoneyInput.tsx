@@ -1,6 +1,6 @@
-import { TextField } from "@mui/material";
 import { FC, forwardRef } from "react";
 import { NumericFormat } from "react-number-format";
+import ValidatedTextField from "../common/ValidatedTextField";
 
 const NumericFormatCustom = forwardRef<
   unknown,
@@ -18,32 +18,41 @@ const NumericFormatCustom = forwardRef<
       thousandSeparator
       inputMode="decimal"
       prefix="$ "
-      onValueChange={(value) =>
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-expect-error
-        onChange({ target: { value: value.floatValue } })
+      onValueChange={
+        (value) =>
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-expect-error
+          onChange({ target: { value: value.floatValue } })
         // simulate the result: event.target.value
       }
     />
   );
 });
 
-
 interface MoneyInputArgs {
   value: number;
   onChange: (value: number) => void;
-  // value is confirmed will be a number.toString()
+  helperText: string;
+  immediate: boolean;
+  label: string;
 }
 
-const MoneyInput: FC<MoneyInputArgs> = ({ value, onChange }) => {
-
+const MoneyInput: FC<MoneyInputArgs> = ({
+  value,
+  onChange,
+  helperText,
+  immediate,
+  label,
+}) => {
   return (
-    <TextField
+    <ValidatedTextField
+      immediate={immediate}
+      validator={() => helperText ?? ""}
       autoFocus
-      label="amount"
+      label={label}
       margin="normal"
       value={value}
-      // as unknown as "type"
+      // as unknown as "type", 把类型强行转换成“type”
       onChange={(input) => onChange(input.target.value as unknown as number)}
       InputProps={{
         inputComponent: NumericFormatCustom,
