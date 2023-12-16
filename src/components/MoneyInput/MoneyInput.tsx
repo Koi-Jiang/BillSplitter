@@ -32,22 +32,23 @@ const NumericFormatCustom = forwardRef<
 interface MoneyInputArgs {
   value: number;
   onChange: (value: number) => void;
-  helperText: string;
   immediate: boolean;
+  validator: (value: number | undefined) => string;
   label: string;
 }
 
 const MoneyInput: FC<MoneyInputArgs> = ({
   value,
   onChange,
-  helperText,
   immediate,
+  validator,
   label,
 }) => {
   return (
     <ValidatedTextField
       immediate={immediate}
-      validator={() => helperText ?? ""}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      validator={validator as any}
       autoFocus
       label={label}
       margin="normal"

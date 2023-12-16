@@ -22,8 +22,8 @@ function BillPanel() {
           <Typography component="h2" variant="h6" className="flex-auto">
             Bills
           </Typography>
-          <IconButton>
-            <AddIcon onClick={() => setIsDialogOpen(true)}/>
+          <IconButton onClick={() => setIsDialogOpen(true)}>
+            <AddIcon />
           </IconButton>
           <IconButton>
             <MoreVertIcon />

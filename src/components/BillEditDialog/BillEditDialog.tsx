@@ -1,16 +1,28 @@
 import {
-  Autocomplete,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  TextField,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
 } from "@mui/material";
 import { FC, useState } from "react";
 import { BillListItemArgs } from "../BillPanel/BillListItem";
 import MoneyInput from "../MoneyInput/MoneyInput";
 import ValidatedTextField from "../common/ValidatedTextField";
+import CheckmarksSelect from "../common/CheckmarkSelect";
+
+const MenuProps = {
+  PaperProps: {
+    style: {
+      // item: 54 * 4.5, padding top: 8
+      maxHeight: 251,
+    },
+  },
+};
 
 export interface BillEditArgs {
   billInfo?: BillListItemArgs;
@@ -33,6 +45,7 @@ const BillEditDialog: FC<BillEditArgs> = ({
     moneyValidator(value);
     setBill({ ...bill, amount: value });
   }
+
   function handleDescriptionChange(value: string) {
     setBill({ ...bill, description: value });
   }
@@ -43,18 +56,24 @@ const BillEditDialog: FC<BillEditArgs> = ({
     setBill({ ...bill, lenders: value });
   }
 
-  const [moneyHelperText, setMoneyHelperText] = useState<string>("");
-  function moneyValidator(value?: number): void {
+  function moneyValidator(value?: number): string {
     if (!value || value === 0) {
-      setMoneyHelperText("Amount can't be empty");
-    }
-    else {
-      setMoneyHelperText("");
+      return "Amount can't be empty";
+    } else {
+      return "";
     }
   }
 
   // FIX:
-  const memberArr = ["bulsafajhlf", "sadlfh", "asfhl"];
+  const memberArr = [
+    "John Cena",
+    "John Doe",
+    "Jesus",
+    "What",
+    "a very long name with break in it",
+    "averylongnamewithnobreakinit",
+    "oh, hello there",
+  ];
 
   return (
     <Dialog open={isOpen} maxWidth="xs" fullWidth>
@@ -78,39 +97,34 @@ const BillEditDialog: FC<BillEditArgs> = ({
           immediate={true}
           label="Amount"
           value={bill.amount}
+          validator={moneyValidator}
           onChange={handleAmountChange}
-          helperText={moneyHelperText}
         />
-        <Autocomplete
-          fullWidth
-          options={memberArr}
-          value={bill.payer}
-          onChange={(_, value) => handlePayerChange(value)}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Choose Payer"
-              required
-              variant="standard"
-              margin="normal"
-            />
-          )}
-        />
-        <Autocomplete
-          multiple
-          fullWidth
-          options={memberArr}
+
+        <FormControl fullWidth required margin="dense">
+          <InputLabel variant="standard">Payer</InputLabel>
+          <Select
+            value={bill.payer}
+            required
+            variant="standard"
+            onChange={(e) => {
+              handlePayerChange(e.target.value);
+            }}
+            MenuProps={MenuProps}
+          >
+            {memberArr.map((v, i) => (
+              <MenuItem className="h-[54px]" value={v} key={i}>
+                {v}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <CheckmarksSelect
           value={bill.lenders}
-          onChange={(_, value) => handleLendersChange(value)}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              required
-              variant="standard"
-              label="Choose Lenders"
-              margin="normal"
-            />
-          )}
+          options={memberArr}
+          label="Lenders"
+          onChange={(value) => handleLendersChange(value)}
         />
       </DialogContent>
       <DialogActions>
@@ -120,7 +134,12 @@ const BillEditDialog: FC<BillEditArgs> = ({
         <Button
           variant="text"
           onClick={() => onConfirm(bill!)}
-          disabled={!bill}
+          disabled={
+            bill.amount === 0 ||
+            bill.description === "" ||
+            bill.lenders.length === 0 ||
+            bill.payer === ""
+          }
         >
           Done
         </Button>
