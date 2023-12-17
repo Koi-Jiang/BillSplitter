@@ -35,7 +35,7 @@ function BillPanel() {
           amount={0.1}
           payer="Kelly"
           lenders={["bill", "bill2", "hie", "hihdfg"]}
-          description="jilihl0"
+          description="abcdefghijklmnopqrstuvwxyzssss w"
         />
         <BillListItem
           amount={-23.535}

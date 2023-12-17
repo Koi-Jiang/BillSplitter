@@ -82,7 +82,7 @@ const BillEditDialog: FC<BillEditArgs> = ({
         <ValidatedTextField
           immediate={true}
           validator={(value) =>
-            value === "" ? "Please enter a description" : ""
+            value.trim() === "" ? "Please enter a description" : ""
           }
           label="Description"
           fullWidth

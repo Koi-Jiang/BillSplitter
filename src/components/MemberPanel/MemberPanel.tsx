@@ -35,6 +35,7 @@ function MemberPanel() {
         <MemberListItem name="this obill is not that =======++++\
           ========================== bill" />
         <MemberListItem name="this boill is not that bill" />
+        <MemberListItem name="aaaaaaaaaaaaaaaaaaaaaa" />
       </List>
 
       <MemberEditDialog

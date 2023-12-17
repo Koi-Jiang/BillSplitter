@@ -4,9 +4,9 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  TextField,
 } from "@mui/material";
 import { FC, useState } from "react";
+import ValidatedTextField from "../common/ValidatedTextField";
 
 export interface MemberEditArgs {
   name?: string;
@@ -27,16 +27,21 @@ const MemberEditDialog: FC<MemberEditArgs> = ({
     <Dialog open={isOpen} maxWidth="xs" fullWidth>
       <DialogTitle>Member</DialogTitle>
       <DialogContent>
-        <TextField
+        <ValidatedTextField
+          immediate={true}
+          validator={(value) =>
+            value.trim() === "" ? "Member name can't be empty" : ""
+          }
           autoFocus
           label="Name"
           fullWidth
           variant="standard"
           required
-          inputProps={{ maxLength: 30 }}
+          inputProps={{ maxLength: 20 }}
           value={memberName}
           onChange={(e) => setMemberName(e.target.value)}
         />
+
       </DialogContent>
       <DialogActions>
         <Button variant="text" onClick={onCancel}>

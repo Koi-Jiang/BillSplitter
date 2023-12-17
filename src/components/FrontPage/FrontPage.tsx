@@ -35,7 +35,11 @@ function FrontPage() {
           onChange={(e) => setName(e.target.value)}
           onKeyUp={(e) => e.code === "Enter" && navigate(`/${name}`)}
         />
-        <IconButton color="primary" disabled={name === ""} href={`/${name}`}>
+        <IconButton
+          color="primary"
+          disabled={name.trim() === ""}
+          href={`/${name}`}
+        >
           <ArrowForwardIcon fontSize="large" />
         </IconButton>
       </Box>
