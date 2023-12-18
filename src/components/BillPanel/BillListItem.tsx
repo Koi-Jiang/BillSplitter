@@ -1,31 +1,33 @@
 import { ListItem, ListItemText, useTheme } from "@mui/material";
 import { FC, useMemo } from "react";
 import { numberFormatter } from "../../utils/numberFormatter";
+import { BillInfo } from "../../utils/BillInfo";
 
 export interface BillListItemArgs {
-  payer: string;
-  lenders: string[];
-  amount: number;
-  description: string;
+  billInfo: BillInfo;
+  onClick: (billInfo: BillInfo) => void;
 }
 
-const BillListItem: FC<BillListItemArgs> = (args) => {
+const BillListItem: FC<BillListItemArgs> = ({
+  billInfo,
+  onClick
+}) => {
   const lendToStr = useMemo(
     () =>
-      args.lenders.length > 2
-        ? `${args.lenders.slice(0, 2).join(", ")} and 
-          ${args.lenders.length - 2} more`
-        : args.lenders.join(" and "),
-    [args.lenders],
+      billInfo.lenders.length > 2
+        ? `${billInfo.lenders.slice(0, 2).join(", ")} and 
+          ${billInfo.lenders.length - 2} more`
+        : billInfo.lenders.join(" and "),
+    [billInfo.lenders],
   );
 
   const { palette } = useTheme();
 
   return (
-    <ListItem>
+    <ListItem onClick={() => onClick(billInfo)}>
       <ListItemText
-        primary={args.description}
-        secondary={`${args.payer} paid for ${lendToStr}`}
+        primary={billInfo.description}
+        secondary={`${billInfo.payer} paid for ${lendToStr}`}
         primaryTypographyProps={{
           component: "p",
           variant: "h5",
@@ -39,13 +41,13 @@ const BillListItem: FC<BillListItemArgs> = (args) => {
         }}
       />
       <ListItemText
-        primary={numberFormatter(args.amount)}
+        primary={numberFormatter(billInfo.amount)}
         className="flex-none"
         primaryTypographyProps={{
           variant: "h4",
           component: "p",
           color: palette.secondary.main,
-          className: "md:text-[34px] text-2xl"
+          className: "md:text-[34px] text-2xl",
         }}
       />
     </ListItem>

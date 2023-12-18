@@ -4,15 +4,27 @@ import AddIcon from "@mui/icons-material/Add";
 import BillListItem from "./BillListItem";
 import BillEditDialog from "../BillEditDialog/BillEditDialog";
 import { useState } from "react";
-
+import BillDetailDialog from "../BillDetailDialog/BillDetailDialog";
+import { BillInfo } from "../../utils/BillInfo";
 
 // FIX:
 
 function BillPanel() {
-  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
-
+  const [isEditOpen, setIsEditOpen] = useState<boolean>(false);
   function handleBillChange() {
-    setIsDialogOpen(false);
+    setIsEditOpen(false);
+  }
+
+  const [isDetailOpen, setIsDetailOpen] = useState<boolean>(false);
+  const [billDetailInfo, setBillDetailInfo] = useState<BillInfo>({
+    amount: 0,
+    payer: "payer",
+    description: "Bill not exist",
+    lenders: [],
+  });
+  function handleDetailOpen(billInfo: BillInfo) {
+    setBillDetailInfo(billInfo);
+    setIsDetailOpen(true);
   }
 
   return (
@@ -22,7 +34,7 @@ function BillPanel() {
           <Typography component="h2" variant="h6" className="flex-auto">
             Bills
           </Typography>
-          <IconButton onClick={() => setIsDialogOpen(true)}>
+          <IconButton onClick={() => setIsEditOpen(true)}>
             <AddIcon />
           </IconButton>
           <IconButton>
@@ -31,29 +43,46 @@ function BillPanel() {
         </Toolbar>
       </AppBar>
       <List>
+        {
+          // TODO: add color difference between old and even lines + add hover color change and make it clickable
+        }
         <BillListItem
-          amount={0.1}
-          payer="Kelly"
-          lenders={["bill", "bill2", "hie", "hihdfg"]}
-          description="abcdefghijklmnopqrstuvwxyzssss w"
+          billInfo={{
+            amount: 0.1,
+            payer: "kelly",
+            lenders: ["bill", "bill2", "hie", "hihdfg"],
+            description: "abcdefghijklmnopqrstuvwxyzssss w",
+          }}
+          onClick={handleDetailOpen}
         />
         <BillListItem
-          amount={-23.535}
-          payer="Kelly"
-          lenders={["bill", "hihdfg"]}
-          description="jilihl0"
+          billInfo={{
+            amount: -23.535,
+            payer: "Kelly",
+            lenders: ["bill", "hihdfg"],
+            description: "jilihl0",
+          }}
+          onClick={handleDetailOpen}
         />
         <BillListItem
-          amount={78778778.78}
-          payer="Kelly"
-          lenders={["bill", "hihdfg"]}
-          description="jilihl0"
+          billInfo={{
+            amount: 78778778.78,
+            payer: "Kelly",
+            lenders: ["bill", "hihdfg"],
+            description: "jilihl0",
+          }}
+          onClick={handleDetailOpen}
         />
       </List>
-      <BillEditDialog 
-        isOpen={isDialogOpen}
-        onCancel={() => setIsDialogOpen(false)}
+      <BillEditDialog
+        isOpen={isEditOpen}
+        onCancel={() => setIsEditOpen(false)}
         onConfirm={() => handleBillChange()}
+      />
+      <BillDetailDialog
+        isOpen={isDetailOpen}
+        onCancel={() => setIsDetailOpen(false)}
+        billInfo={billDetailInfo}
       />
     </>
   );

@@ -10,10 +10,10 @@ import {
   Select,
 } from "@mui/material";
 import { FC, useState } from "react";
-import { BillListItemArgs } from "../BillPanel/BillListItem";
 import MoneyInput from "../MoneyInput/MoneyInput";
 import ValidatedTextField from "../common/ValidatedTextField";
 import CheckmarksSelect from "../common/CheckmarkSelect";
+import { BillInfo } from "../../utils/BillInfo";
 
 const MenuProps = {
   PaperProps: {
@@ -25,10 +25,10 @@ const MenuProps = {
 };
 
 export interface BillEditArgs {
-  billInfo?: BillListItemArgs;
+  billInfo?: BillInfo;
   isOpen: boolean;
   onCancel: () => void;
-  onConfirm: (billInfo: BillListItemArgs) => void;
+  onConfirm: (billInfo: BillInfo) => void;
 }
 
 const BillEditDialog: FC<BillEditArgs> = ({
@@ -37,7 +37,7 @@ const BillEditDialog: FC<BillEditArgs> = ({
   onCancel,
   onConfirm,
 }) => {
-  const [bill, setBill] = useState<BillListItemArgs>(
+  const [bill, setBill] = useState<BillInfo>(
     billInfo ?? { amount: 0, description: "", payer: "", lenders: [] },
   );
 
