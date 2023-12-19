@@ -51,25 +51,25 @@ function BillPanel() {
             amount: 0.1,
             payer: "kelly",
             lenders: ["bill", "bill2", "hie", "hihdfg"],
-            description: "abcdefghijklmnopqrstuvwxyzssss w",
+            description: "Lorem ipsum dolor sit aliquam.",
           }}
           onClick={handleDetailOpen}
         />
         <BillListItem
           billInfo={{
-            amount: -23.535,
+            amount: 23.535,
             payer: "Kelly",
             lenders: ["bill", "hihdfg"],
-            description: "jilihl0",
+            description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit dui.",
           }}
           onClick={handleDetailOpen}
         />
         <BillListItem
           billInfo={{
-            amount: 78778778.78,
+            amount: 65535.78,
             payer: "Kelly",
             lenders: ["bill", "hihdfg"],
-            description: "jilihl0",
+            description: "Lorem ipsum",
           }}
           onClick={handleDetailOpen}
         />

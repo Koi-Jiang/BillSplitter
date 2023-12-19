@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Dialog, DialogContent, Typography } from "@mui/material";
+import { Box, Dialog, DialogContent, Divider, Typography, useTheme } from "@mui/material";
 import { numberFormatter } from "../../utils/numberFormatter";
 import { BillInfo } from "../../utils/BillInfo";
 
@@ -12,20 +12,35 @@ export interface BillEditArgs {
 }
 
 const BillDetailDialog: FC<BillEditArgs> = ({ billInfo, isOpen, onCancel }) => {
+  const { palette } = useTheme();
   return (
     <Dialog
       open={isOpen}
-      maxWidth="md"
+      maxWidth="xs"
       fullWidth
       onClose={onCancel}
     >
-      <DialogContent className="flex flex-col gap-2">
-        <Typography component="h2" variant="h5" className="flex-auto font-bold">
-          {numberFormatter(billInfo.amount)}
-        </Typography>
-        <Typography component="h2" variant="h5" className="flex-auto">
+      <DialogContent>
+        <Typography component="h2" variant="h5" className="text-center">
           {billInfo.description}
         </Typography>
+        <Typography component="p" variant="subtitle2" className="text-center">
+          Dec. 12, 2024
+        </Typography>
+        <Divider className="my-2"/>
+        <Box component="section">
+          <Typography component="h3" variant="h5">
+            {billInfo.payer}
+          </Typography>
+        </Box>
+        <Box component="section">
+          <Typography component="h3" variant="h5">
+            Lenders:
+          </Typography>
+          {billInfo.lenders.map((v, i) => (
+            <Typography component="h4" variant="h6" className="font-normal indent-28" key={i}>{v}</Typography>
+          ))}
+        </Box>
       </DialogContent>
     </Dialog>
   );
