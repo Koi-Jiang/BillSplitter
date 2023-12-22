@@ -14,6 +14,8 @@ import MoneyInput from "../MoneyInput/MoneyInput";
 import ValidatedTextField from "../common/ValidatedTextField";
 import CheckmarksSelect from "../common/CheckmarkSelect";
 import { BillInfo } from "../../utils/BillInfo";
+import dayjs, { Dayjs } from "dayjs";
+import { DatePicker } from "@mui/x-date-pickers";
 
 const MenuProps = {
   PaperProps: {
@@ -38,14 +40,19 @@ const BillEditDialog: FC<BillEditArgs> = ({
   onConfirm,
 }) => {
   const [bill, setBill] = useState<BillInfo>(
-    billInfo ?? { amount: 0, description: "", payer: "", lenders: [] },
+    billInfo ?? {
+      amount: 0,
+      description: "",
+      payer: "",
+      lenders: [],
+      date: dayjs(),
+    },
   );
 
   function handleAmountChange(value: number) {
     moneyValidator(value);
     setBill({ ...bill, amount: value });
   }
-
   function handleDescriptionChange(value: string) {
     setBill({ ...bill, description: value });
   }
@@ -55,6 +62,9 @@ const BillEditDialog: FC<BillEditArgs> = ({
   function handleLendersChange(value: string[]) {
     setBill({ ...bill, lenders: value });
   }
+  function handleDateChange(value: Dayjs) {
+    setBill({ ...bill, date: value });
+  }
 
   function moneyValidator(value?: number): string {
     if (!value || value === 0) {
@@ -63,6 +73,8 @@ const BillEditDialog: FC<BillEditArgs> = ({
       return "";
     }
   }
+
+  const [dateError, setDateError] = useState<boolean>(false);
 
   // FIX:
   const memberArr = [
@@ -99,6 +111,21 @@ const BillEditDialog: FC<BillEditArgs> = ({
           value={bill.amount}
           validator={moneyValidator}
           onChange={handleAmountChange}
+        />
+        <DatePicker
+          slotProps={{
+            textField: {
+              fullWidth: true,
+              variant: "standard",
+              margin: "dense",
+              label: "Date",
+              required: true,
+            },
+          }}
+          format="LL"
+          value={bill.date}
+          onChange={(e) => handleDateChange(e ?? dayjs())}
+          onError={(err) => setDateError(err !== null)}
         />
 
         <FormControl fullWidth required margin="dense">
@@ -138,7 +165,8 @@ const BillEditDialog: FC<BillEditArgs> = ({
             bill.amount === 0 ||
             bill.description === "" ||
             bill.lenders.length === 0 ||
-            bill.payer === ""
+            bill.payer === "" ||
+            dateError
           }
         >
           Done

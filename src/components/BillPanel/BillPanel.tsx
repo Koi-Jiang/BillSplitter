@@ -6,6 +6,7 @@ import BillEditDialog from "../BillEditDialog/BillEditDialog";
 import { useState } from "react";
 import BillDetailDialog from "../BillDetailDialog/BillDetailDialog";
 import { BillInfo } from "../../utils/BillInfo";
+import dayjs from "dayjs";
 
 // FIX:
 
@@ -21,6 +22,7 @@ function BillPanel() {
     payer: "payer",
     description: "Bill not exist",
     lenders: [],
+    date: dayjs(),
   });
   function handleDetailOpen(billInfo: BillInfo) {
     setBillDetailInfo(billInfo);
@@ -49,6 +51,7 @@ function BillPanel() {
         <BillListItem
           billInfo={{
             amount: 0.1,
+            date: dayjs("2018-04-04T16:00:00.000Z"),
             payer: "kelly",
             lenders: ["bill", "bill2", "hie", "hihdfg"],
             description: "Lorem ipsum dolor sit aliquam.",
@@ -58,6 +61,7 @@ function BillPanel() {
         <BillListItem
           billInfo={{
             amount: 23.535,
+            date: dayjs("2018-04-04T16:00:00.000Z"),
             payer: "Kelly",
             lenders: ["bill", "hihdfg"],
             description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit dui.",
@@ -67,6 +71,7 @@ function BillPanel() {
         <BillListItem
           billInfo={{
             amount: 65535.78,
+            date: dayjs("2018-04-04T16:00:00.000Z"),
             payer: "Kelly",
             lenders: ["bill", "hihdfg"],
             description: "Lorem ipsum",

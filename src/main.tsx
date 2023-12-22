@@ -16,6 +16,10 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import RoomPage from "./components/RoomPage/RoomPage";
 import { grey } from "@mui/material/colors";
+import dayjs from "dayjs";
+import localizedFormat from "dayjs/plugin/localizedFormat";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 const breakpoints = {
   values: {
@@ -61,13 +65,18 @@ const router = createBrowserRouter([
   },
 ]);
 
+// Globally extend dayjs format
+dayjs.extend(localizedFormat);
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={darkTheme}>
-        <CssBaseline />
-        <RouterProvider router={router} />
-      </ThemeProvider>
-    </StyledEngineProvider>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={darkTheme}>
+          <CssBaseline />
+          <RouterProvider router={router} />
+        </ThemeProvider>
+      </StyledEngineProvider>
+    </LocalizationProvider>
   </React.StrictMode>,
 );

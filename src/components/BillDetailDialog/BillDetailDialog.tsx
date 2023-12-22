@@ -41,8 +41,8 @@ const BillDetailDialog: FC<BillEditArgs> = ({ billInfo, isOpen, onCancel }) => {
           >
             {billInfo.description}
           </Typography>
-          <Typography component="p" variant="subtitle2" className="text-center">
-            Dec. 12, 2024
+          <Typography component="p" variant="subtitle1" className="text-center">
+            {billInfo.date.format("LL")}
           </Typography>
         </Box>
         <Box component="div" className="my-2 flex flex-row items-center">
