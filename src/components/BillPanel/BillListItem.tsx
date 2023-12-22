@@ -1,7 +1,9 @@
-import { ListItem, ListItemText, useTheme } from "@mui/material";
+import { IconButton, ListItem, ListItemText, useTheme } from "@mui/material";
 import { FC, useMemo } from "react";
 import { numberFormatter } from "../../utils/numberFormatter";
 import { BillInfo } from "../../utils/BillInfo";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIconButton from "../common/DeleteIconButton/DeleteIconButton";
 
 export interface BillListItemArgs {
   billInfo: BillInfo;
@@ -24,8 +26,10 @@ const BillListItem: FC<BillListItemArgs> = ({
   const { palette } = useTheme();
 
   return (
-    <ListItem onClick={() => onClick(billInfo)}>
+    <ListItem>
       <ListItemText
+        className="cursor-pointer"
+        onClick={() => onClick(billInfo)}
         primary={billInfo.description}
         secondary={`${billInfo.payer} paid for ${lendToStr}`}
         primaryTypographyProps={{
@@ -42,7 +46,7 @@ const BillListItem: FC<BillListItemArgs> = ({
       />
       <ListItemText
         primary={numberFormatter(billInfo.amount)}
-        className="flex-none"
+        className="flex-none mr-2"
         primaryTypographyProps={{
           variant: "h4",
           component: "p",
@@ -50,6 +54,10 @@ const BillListItem: FC<BillListItemArgs> = ({
           className: "md:text-[34px] text-2xl",
         }}
       />
+      <IconButton>
+        <EditIcon />
+      </IconButton>
+      <DeleteIconButton onDelete={() => console.log("delete")}/>
     </ListItem>
   );
 };

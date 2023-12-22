@@ -1,0 +1,178 @@
+.icon-btn {
+  --normal-color: #fff;
+  --confirm-color: #d32f2f;
+  --size: 40px;
+  height: var(--size);
+  background: transparent;
+  border: none;
+
+  & svg * {
+    fill: var(--normal-color);
+    stroke: var(--normal-color);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  #delete-btn {
+    --easeInOutCubic: cubic-bezier(0.65, 0, 0.35, 1);
+    --duration: 0.5s;
+
+    --shake1: calc(var(--size) / 64);
+    --shake2: calc(2 * var(--shake1));
+    --shake3: calc(3 * var(--shake1));
+    --shake-1: calc(-1 * var(--shake1));
+    --shake-2: calc(-2 * var(--shake1));
+    --shake-3: calc(-3 * var(--shake1));
+
+    & svg {
+      overflow: visible;
+
+      & * {
+        transition:
+          fill 0.1s ease,
+          stroke 0.1s ease;
+      }
+    }
+
+    & #cross,
+    & #normal {
+      display: none;
+    }
+
+    & #transition {
+      stroke-dasharray: 11.35px 100;
+      stroke-dashoffset: -120.5%;
+    }
+
+    & #cap {
+      transition:
+        translate 0.1s ease,
+        rotate 0.1s ease;
+    }
+
+    &:hover {
+      &:not(.confirm) #cap {
+        translate: 2px -5px;
+        rotate: 10deg;
+      }
+    }
+
+    &.confirm {
+      & svg * {
+        fill: var(--confirm-color);
+        stroke: var(--confirm-color);
+      }
+
+      & #transition {
+        animation: transition var(--duration) var(--easeInOutCubic) forwards;
+      }
+
+      & #cap {
+        animation: cap-convert var(--duration) var(--easeInOutCubic);
+      }
+
+      & #body {
+        animation: body-convert var(--duration) var(--easeInOutCubic);
+      }
+
+      & svg:hover {
+        animation: shake 0.5s linear infinite;
+      }
+    }
+
+    @keyframes transition {
+      0% {
+        stroke-dashoffset: -120.5%;
+      }
+      100% {
+        stroke-dashoffset: 0%;
+      }
+    }
+
+    @keyframes cap-convert {
+      0% {
+        translate: 2px -5px;
+        rotate: 10deg;
+      }
+      30%,
+      70% {
+        translate: 12px -17px;
+        rotate: 30deg;
+      }
+      100% {
+        translate: 0 0;
+        rotate: 0;
+      }
+    }
+
+    @keyframes body-convert {
+      0%,
+      100% {
+        translate: 0 0;
+      }
+      50%,
+      80% {
+        translate: 0 4px;
+      }
+    }
+
+    @keyframes shake {
+      0% {
+        transform: translate(var(--shake1), var(--shake1)) rotate(0deg);
+      }
+      10% {
+        transform: translate(var(--shake-1), var(--shake-2)) rotate(-1deg);
+      }
+      20% {
+        transform: translate(var(--shake-3), 0px) rotate(1deg);
+      }
+      30% {
+        transform: translate(var(--shake3), var(--shake2)) rotate(0deg);
+      }
+      40% {
+        transform: translate(var(--shake1), var(--shake-1)) rotate(1deg);
+      }
+      50% {
+        transform: translate(var(--shake-1), var(--shake2)) rotate(-1deg);
+      }
+      60% {
+        transform: translate(var(--shake-3), var(--shake1)) rotate(0deg);
+      }
+      70% {
+        transform: translate(var(--shake3), var(--shake1)) rotate(-1deg);
+      }
+      80% {
+        transform: translate(var(--shake-1), var(--shake-1)) rotate(1deg);
+      }
+      90% {
+        transform: translate(var(--shake1), var(--shake2)) rotate(0deg);
+      }
+      100% {
+        transform: translate(var(--shake1), var(--shake-2)) rotate(-1deg);
+      }
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #delete-btn {
+    & #transition,
+    & #cross {
+      display: none;
+    }
+
+    &.confirm {
+      & svg * {
+        fill: var(--confirm-color);
+        stroke: var(--confirm-color);
+      }
+
+      & #cross {
+        display: block;
+      }
+      & #normal {
+        display: none;
+      }
+    }
+  }
+}

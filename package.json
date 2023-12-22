@@ -17,6 +17,7 @@
     "@mui/material": "^5.14.20",
     "@mui/x-date-pickers": "^6.18.5",
     "boring-avatars": "^1.10.1",
+    "classnames": "^2.3.2",
     "dayjs": "^1.11.10",
     "localforage": "^1.10.0",
     "lodash": "^4.17.21",
@@ -45,6 +46,7 @@
     "tailwindcss": "^3.3.6",
     "typescript": "^5.2.2",
     "vite": "^5.0.0",
-    "vite-plugin-pwa": "^0.17.3"
+    "vite-plugin-pwa": "^0.17.3",
+    "vite-plugin-svgr": "^4.2.0"
   }
 }
