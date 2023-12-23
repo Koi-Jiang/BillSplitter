@@ -9,7 +9,7 @@ import {
   MenuItem,
   Select,
 } from "@mui/material";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import MoneyInput from "../MoneyInput/MoneyInput";
 import ValidatedTextField from "../common/ValidatedTextField";
 import CheckmarksSelect from "../common/CheckmarkSelect";
@@ -27,11 +27,19 @@ const MenuProps = {
 };
 
 export interface BillEditArgs {
-  billInfo?: BillInfo;
+  billInfo: BillInfo | null;
   isOpen: boolean;
   onCancel: () => void;
   onConfirm: (billInfo: BillInfo) => void;
 }
+
+const createEmptyBill = () => ({
+  amount: 0,
+  description: "",
+  payer: "",
+  lenders: [],
+  date: dayjs(),
+});
 
 const BillEditDialog: FC<BillEditArgs> = ({
   billInfo,
@@ -39,15 +47,11 @@ const BillEditDialog: FC<BillEditArgs> = ({
   onCancel,
   onConfirm,
 }) => {
-  const [bill, setBill] = useState<BillInfo>(
-    billInfo ?? {
-      amount: 0,
-      description: "",
-      payer: "",
-      lenders: [],
-      date: dayjs(),
-    },
-  );
+  const [bill, setBill] = useState<BillInfo>(billInfo ?? createEmptyBill());
+
+  useEffect(() => {
+    setBill(billInfo ?? createEmptyBill());
+  }, [billInfo]);
 
   function handleAmountChange(value: number) {
     moneyValidator(value);

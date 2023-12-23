@@ -37,6 +37,10 @@ const DeleteIconButton: FC<DeleteIconButtonArgs> = ({ onDelete }) => {
       className={classNames("icon-btn p-[7px]", { confirm: isConfirm })}
       onClick={handleClick}
     >
+      {
+        // use svgr plugin to insert the svg as a component instead of a path,
+        // so css can find its ids
+      }
       <DeleteIcon />
     </IconButton>
   );

@@ -11,11 +11,6 @@ import dayjs from "dayjs";
 // FIX:
 
 function BillPanel() {
-  const [isEditOpen, setIsEditOpen] = useState<boolean>(false);
-  function handleBillChange() {
-    setIsEditOpen(false);
-  }
-
   const [isDetailOpen, setIsDetailOpen] = useState<boolean>(false);
   const [billDetailInfo, setBillDetailInfo] = useState<BillInfo>({
     amount: 0,
@@ -27,6 +22,16 @@ function BillPanel() {
   function handleDetailOpen(billInfo: BillInfo) {
     setBillDetailInfo(billInfo);
     setIsDetailOpen(true);
+  }
+  
+  const [billEditInfo, setBillEditInfo] = useState<BillInfo | null>(null);
+  const [isEditOpen, setIsEditOpen] = useState<boolean>(false);
+  function handleBillChange() {
+    setIsEditOpen(false);
+  }
+  function handleEditOpen(billInfo: BillInfo) {
+    setBillEditInfo(billInfo);
+    setIsEditOpen(true);
   }
 
   return (
@@ -56,7 +61,8 @@ function BillPanel() {
             lenders: ["bill", "bill2", "hie", "hihdfg"],
             description: "Lorem ipsum dolor sit aliquam.",
           }}
-          onClick={handleDetailOpen}
+          onDetailOpen={handleDetailOpen}
+          onEditOpen={handleEditOpen}
         />
         <BillListItem
           billInfo={{
@@ -66,7 +72,8 @@ function BillPanel() {
             lenders: ["bill", "hihdfg"],
             description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit dui.",
           }}
-          onClick={handleDetailOpen}
+          onDetailOpen={handleDetailOpen}
+          onEditOpen={handleEditOpen}
         />
         <BillListItem
           billInfo={{
@@ -76,13 +83,15 @@ function BillPanel() {
             lenders: ["bill", "hihdfg"],
             description: "Lorem ipsum",
           }}
-          onClick={handleDetailOpen}
+          onDetailOpen={handleDetailOpen}
+          onEditOpen={handleEditOpen}
         />
       </List>
       <BillEditDialog
         isOpen={isEditOpen}
         onCancel={() => setIsEditOpen(false)}
         onConfirm={() => handleBillChange()}
+        billInfo={billEditInfo}
       />
       <BillDetailDialog
         isOpen={isDetailOpen}

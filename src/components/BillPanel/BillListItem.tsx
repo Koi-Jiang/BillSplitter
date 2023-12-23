@@ -7,13 +7,16 @@ import DeleteIconButton from "../common/DeleteIconButton/DeleteIconButton";
 
 export interface BillListItemArgs {
   billInfo: BillInfo;
-  onClick: (billInfo: BillInfo) => void;
+  onDetailOpen: (billInfo: BillInfo) => void;
+  onEditOpen: (billInfo: BillInfo) => void;
 }
 
 const BillListItem: FC<BillListItemArgs> = ({
   billInfo,
-  onClick
+  onDetailOpen,
+  onEditOpen,
 }) => {
+
   const lendToStr = useMemo(
     () =>
       billInfo.lenders.length > 2
@@ -29,7 +32,7 @@ const BillListItem: FC<BillListItemArgs> = ({
     <ListItem>
       <ListItemText
         className="cursor-pointer"
-        onClick={() => onClick(billInfo)}
+        onClick={() => onDetailOpen(billInfo)}
         primary={billInfo.description}
         secondary={`${billInfo.payer} paid for ${lendToStr}`}
         primaryTypographyProps={{
@@ -55,7 +58,7 @@ const BillListItem: FC<BillListItemArgs> = ({
         }}
       />
       <IconButton>
-        <EditIcon />
+        <EditIcon onClick={() => onEditOpen(billInfo)}/>
       </IconButton>
       <DeleteIconButton onDelete={() => console.log("delete")}/>
     </ListItem>
