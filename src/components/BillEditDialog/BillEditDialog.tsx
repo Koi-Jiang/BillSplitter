@@ -16,6 +16,7 @@ import CheckmarksSelect from "../common/CheckmarkSelect";
 import { BillInfo } from "../../utils/BillInfo";
 import dayjs, { Dayjs } from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers";
+import { nanoid } from "nanoid";
 
 const MenuProps = {
   PaperProps: {
@@ -34,6 +35,7 @@ export interface BillEditArgs {
 }
 
 const createEmptyBill = () => ({
+  id: nanoid(),
   amount: 0,
   description: "",
   payer: "",

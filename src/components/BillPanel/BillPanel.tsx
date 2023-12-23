@@ -7,12 +7,14 @@ import { useState } from "react";
 import BillDetailDialog from "../BillDetailDialog/BillDetailDialog";
 import { BillInfo } from "../../utils/BillInfo";
 import dayjs from "dayjs";
+import { nanoid } from "nanoid";
 
 // FIX:
 
 function BillPanel() {
   const [isDetailOpen, setIsDetailOpen] = useState<boolean>(false);
   const [billDetailInfo, setBillDetailInfo] = useState<BillInfo>({
+    id: nanoid(),
     amount: 0,
     payer: "payer",
     description: "Bill not exist",
@@ -55,6 +57,7 @@ function BillPanel() {
         }
         <BillListItem
           billInfo={{
+            id: "sfjjsfds",
             amount: 0.1,
             date: dayjs("2018-04-04T16:00:00.000Z"),
             payer: "kelly",
@@ -66,6 +69,7 @@ function BillPanel() {
         />
         <BillListItem
           billInfo={{
+            id: "dsf",
             amount: 23.535,
             date: dayjs("2018-04-04T16:00:00.000Z"),
             payer: "Kelly",
@@ -77,6 +81,7 @@ function BillPanel() {
         />
         <BillListItem
           billInfo={{
+            id: "dsfsa",
             amount: 65535.78,
             date: dayjs("2018-04-04T16:00:00.000Z"),
             payer: "Kelly",
