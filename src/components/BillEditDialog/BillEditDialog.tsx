@@ -13,7 +13,7 @@ import { FC, useContext, useEffect, useState } from "react";
 import MoneyInput from "../MoneyInput/MoneyInput";
 import ValidatedTextField from "../common/ValidatedTextField";
 import CheckmarksSelect from "../common/CheckmarkSelect";
-import { BillInfo } from "../../utils/BillInfo";
+import { BillInfo } from "../../utils/billInfo";
 import dayjs, { Dayjs } from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers";
 import { nanoid } from "nanoid";

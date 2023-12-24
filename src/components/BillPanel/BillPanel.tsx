@@ -5,7 +5,7 @@ import BillListItem from "./BillListItem";
 import BillEditDialog from "../BillEditDialog/BillEditDialog";
 import { useContext, useState } from "react";
 import BillDetailDialog from "../BillDetailDialog/BillDetailDialog";
-import { BillInfo } from "../../utils/BillInfo";
+import { BillInfo } from "../../utils/billInfo";
 import dayjs from "dayjs";
 import { nanoid } from "nanoid";
 import { GlobalContext } from "../../contexts/GlobalContext";
@@ -59,7 +59,9 @@ function BillPanel() {
         {
           // TODO: add color difference between old and even lines + add hover color change and make it clickable
         }
-        {globalContext?.bills.map((v) => (
+        {globalContext?.bills
+          .toSorted((a,b) => {return a.date.isBefore(b.date) ? 1 : -1})
+          .map((v) => (
           <BillListItem
             key={v.id}
             billInfo={{

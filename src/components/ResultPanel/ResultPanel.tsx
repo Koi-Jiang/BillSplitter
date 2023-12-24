@@ -1,7 +1,12 @@
 import { AppBar, List, Toolbar, Typography } from "@mui/material";
+import { useContext } from "react";
 import ResultListItem from "./ResultListItem";
+import { GlobalContext } from "../../contexts/GlobalContext";
 
 function ResultPanel() {
+
+  const { transactions } = useContext(GlobalContext)!;
+
   return (
     <>
       <AppBar position="static">
@@ -12,11 +17,16 @@ function ResultPanel() {
         </Toolbar>
       </AppBar>
       <List>
-        <ResultListItem payee="god" payer="static" amount={11.40}/>
-        <ResultListItem payee="godasdfs" payer="xxtatic" amount={666.60}/>
-        <ResultListItem payee="godasd" payer="static" amount={64666}/>
-        <ResultListItem payee="god236" payer="static" amount={666.6}/>
-        <ResultListItem payee="god" payer="static" amount={66666}/>
+        {
+          transactions.map((transaction, index) => (
+            <ResultListItem
+              key={index}
+              from={transaction.from}
+              to={transaction.to}
+              amount={transaction.amount}
+            />
+          ))
+        }
       </List>
     </>
   );

@@ -1,7 +1,7 @@
 import { IconButton, ListItem, ListItemText, useTheme } from "@mui/material";
 import { FC, useContext, useMemo } from "react";
 import { numberFormatter } from "../../utils/numberFormatter";
-import { BillInfo } from "../../utils/BillInfo";
+import { BillInfo } from "../../utils/billInfo";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIconButton from "../common/DeleteIconButton/DeleteIconButton";
 import { GlobalContext } from "../../contexts/GlobalContext";

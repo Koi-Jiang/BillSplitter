@@ -1,13 +1,16 @@
 import { FC, PropsWithChildren, createContext, useMemo, useState } from "react";
-import { BillInfo } from "../utils/BillInfo";
+import { BillInfo } from "../utils/billInfo";
 import { Map, OrderedMap, OrderedSet } from "immutable";
 import dayjs from "dayjs";
+import { Transaction } from "../utils/transaction";
+import _ from "lodash";
 
 export interface GlobalContextArgs {
   members: string[];
   bills: BillInfo[];
+  transactions: Transaction[];
   addMember: (member: string) => void;
-  deleteMember: (member: string) => void;
+  deleteMember: (member: string) => boolean;
   updateBill: (billInfo: BillInfo) => void;
   deleteBill: (id: string) => void;
 }
@@ -17,62 +20,66 @@ export const GlobalContext = createContext<GlobalContextArgs>(null!);
 
 const GlobalContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const [memberSet, setMemberSet] = useState<OrderedSet<string>>(
-    OrderedSet([
-      "this bill is not that bill",
-      "Bill Peng",
-      "Emily",
-      "Kelly",
-      "this bill is notooo that bill",
-      "just for test",
-      "this's 20 charactors",
-    ]),
+    OrderedSet(["Bill", "Emily", "Kelly", "Alan", "aaaaaaaaaaaaaaaaaaaa"]),
   );
   const [billMap, setBillMap] = useState<OrderedMap<string, BillInfo>>(
     Map<string, BillInfo>({
-      ["2346"]: {
-        id: "2346",
-        amount: 23460.1,
-        date: dayjs("2018-04-04T16:00:00.000Z"),
-        payer: "kelly",
-        lenders: ["bill", "bill2", "hie", "hihdfg"],
-        description: "Lorem ipsum dolor sit aliquam.",
+      ["1"]: {
+        id: "1",
+        amount: 100,
+        date: dayjs("2023-12-12T16:00:00.000Z"),
+        payer: "Bill",
+        lenders: ["Bill", "Emily", "Kelly", "Alan"],
+        description: "A",
       },
-      ["222222"]: {
-        id: "222222",
-        amount: 222222.535,
-        date: dayjs("2018-04-04T16:00:00.000Z"),
-        payer: "Kelly",
-        lenders: ["bill", "hihdfg"],
-        description:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit dui.",
+      ["2"]: {
+        id: "2",
+        amount: 75,
+        date: dayjs("2023-12-13T16:00:00.000Z"),
+        payer: "Emily",
+        lenders: ["Bill", "Emily", "Kelly"],
+        description: "B",
       },
-      ["333333"]: {
-        id: "333333",
-        amount: 333333.78,
-        date: dayjs("2018-04-04T16:00:00.000Z"),
-        payer: "Kelly",
-        lenders: ["bill", "hihdfg"],
-        description: "Lorem ipsum",
+      ["3"]: {
+        id: "3",
+        amount: 75,
+        date: dayjs("2023-12-14T16:00:00.000Z"),
+        payer: "Alan",
+        lenders: ["Emily", "Kelly", "Alan"],
+        description: "C",
       },
-      ["444444"]: {
-        id: "444444",
-        amount: 444444,
-        date: dayjs("2018-04-04T16:00:00.000Z"),
+      ["4"]: {
+        id: "4",
+        amount: 20,
+        date: dayjs("2023-12-15T16:00:00.000Z"),
         payer: "Kelly",
-        lenders: ["bill", "hihdfg"],
-        description:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit dui.",
+        lenders: ["Emily", "Kelly"],
+        description: "D",
       },
     }),
   );
 
   function addMember(member: string) {
+    if (memberSet.has(member)) {
+      alert("Member already exists."); // TODO: use snackbar
+      return;
+    }
     setMemberSet(memberSet.add(member));
   }
 
   const deleteMember = (member: string) => {
-    // NOTE: parse in a function to make sure v is the newest state and set the state to the returned value
+    // check if the member is the payer or lender of any bill
+    for (const bill of billMap.values()) {
+      if (bill.payer === member || bill.lenders.includes(member)) {
+        // if so, do not delete the member, return false
+        return false;
+      }
+    }
+
+    // NOTE: parse in a function to make sure v is the newest state and 
+    //       set the state to the returned value
     setMemberSet((v) => v.delete(member));
+    return true;
   };
 
   function updateBill(billInfo: BillInfo) {
@@ -83,14 +90,108 @@ const GlobalContextProvider: FC<PropsWithChildren> = ({ children }) => {
     setBillMap((v) => v.delete(id));
   }
 
+  function calcResults(): Transaction[] {
+
+    // 1. create a table of member and its cumulative credits, init to 0
+    const cumulativeCredits: Record<string, number> = {};
+    for (let i = 0; i < members.length; i++) {
+      cumulativeCredits[members[i]] = 0;
+    }
+
+    // 2. for each bill, add the amount to the payer,
+    //    and minus the share from each lender
+    for (let i = 0; i < bills.length; i++) {
+      const currentBill = bills[i];
+      cumulativeCredits[currentBill.payer] += currentBill.amount;
+      const share = currentBill.amount / currentBill.lenders.length;
+
+      for (let j = 0; j < currentBill.lenders.length; j++) {
+        cumulativeCredits[currentBill.lenders[j]] -= share;
+      }
+    }
+
+    // 3. group the members by sign
+    const group = _.groupBy(Object.entries(cumulativeCredits),
+      ([,v]) => Math.sign(v));
+
+    // 4. sort the positive and negative list so that the first element
+    //    is the one with the largest amount
+    const posList = group[1].toSorted((a, b) => Math.sign(b[1] - a[1]));
+    const negList = group[-1].toSorted((a, b) => Math.sign(a[1] - b[1]));
+
+    // if one of the list is empty, then the other list must be empty too,
+    // skip the calculation and return empty array
+    if (posList.length === 0) {
+      return [];
+    }
+
+    const results: Transaction[] = [];
+
+    // Keep track of the amount needed for the current positive member
+    let posNeed = posList[0][1];
+    // Keep track of the amount left for the current negative member
+    let negLeft = negList[0][1];
+
+    // 5. while both list are not empty, keep calculating
+    while (posList.length > 0 && negList.length > 0) {
+      // the amount to be paid in this transaction is the smalller one of
+      // the amount needed for the current positive member and the amount
+      // left for the current negative member
+      const value = Math.min(posNeed, -negLeft);
+
+      // add the transaction to the result
+      results.push({
+        from: negList[0][0],
+        to: posList[0][0],
+        amount: value,
+      });
+
+      // update the amount needed for the current positive member and
+      // the amount left for the current negative member
+      posNeed -= value;
+      negLeft += value;
+
+      // if the amount needed for the current positive member is 0,
+      // get the next positive member
+      if (posNeed <= 0) {
+        posList.shift();
+
+        // if there is no more positive member, break the loop
+        if (posList.length === 0)
+          break;
+
+        // update the amount needed for the current positive member
+        posNeed = posList[0][1];
+      }
+
+      // if the amount left for the current negative member is 0,
+      // get the next negative member
+      if (negLeft >= 0) {
+        negList.shift();
+
+        // this is not necessary since the two list should be empty
+        // at the same time, but just in case
+        if (negList.length === 0)
+          break;
+
+        // update the amount left for the current negative member
+        negLeft = negList[0][1];
+      }
+    }
+
+    return results;
+  }
+
   const members = useMemo(() => memberSet.toArray(), [memberSet]);
   const bills = useMemo(() => billMap.valueSeq().toArray(), [billMap]);
+  const transactions = useMemo(calcResults, [members, bills]);
 
   return (
     <GlobalContext.Provider
       value={{
         members,
         bills,
+        transactions,
         addMember,
         deleteMember,
         updateBill,

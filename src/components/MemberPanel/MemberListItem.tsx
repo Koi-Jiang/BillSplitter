@@ -15,6 +15,13 @@ export interface MemberListItemArgs {
 const MemberListItem: FC<MemberListItemArgs> = ({ name }) => {
   const { deleteMember } = useContext(GlobalContext)!;
 
+  function tryDeleteMember(name: string) {
+    if (!deleteMember(name)) {
+      // TODO: Use snackbar
+      alert("Cannot delete this member because there are bills related to this member.");
+    }
+  }
+
   return (
     <ListItem>
       <ListItemAvatar>
@@ -35,7 +42,7 @@ const MemberListItem: FC<MemberListItemArgs> = ({ name }) => {
         }}
         className="ml-4"
       />
-      <DeleteIconButton onDelete={() => deleteMember(name)}/>
+      <DeleteIconButton onDelete={() => tryDeleteMember(name)}/>
     </ListItem>
   );
 };

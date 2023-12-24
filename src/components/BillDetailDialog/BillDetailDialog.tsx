@@ -10,7 +10,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { numberFormatter } from "../../utils/numberFormatter";
-import { BillInfo } from "../../utils/BillInfo";
+import { BillInfo } from "../../utils/billInfo";
 import Avatar from "boring-avatars";
 import CloseIcon from "@mui/icons-material/Close";
 

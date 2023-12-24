@@ -4,12 +4,12 @@ import EastIcon from "@mui/icons-material/East";
 import { numberFormatter } from "../../utils/numberFormatter";
 
 export interface ResultListItemArgs {
-  payer: string;
-  payee: string;
+  from: string;
+  to: string;
   amount: number;
 }
 
-const ResultListItem: FC<ResultListItemArgs> = ({ payer, payee, amount }) => {
+const ResultListItem: FC<ResultListItemArgs> = ({ from, to, amount }) => {
   const { palette } = useTheme();
 
   return (
@@ -20,7 +20,7 @@ const ResultListItem: FC<ResultListItemArgs> = ({ payer, payee, amount }) => {
         component="p"
         fontWeight="normal"
       >
-        {payer}
+        {from}
       </Typography>
       <EastIcon className="row-auto col-auto" />
       <Typography
@@ -29,7 +29,7 @@ const ResultListItem: FC<ResultListItemArgs> = ({ payer, payee, amount }) => {
         component="p"
         fontWeight="normal"
       >
-        {payee}
+        {to}
       </Typography>
 
       <Typography
