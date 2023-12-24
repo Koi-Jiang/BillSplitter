@@ -8,7 +8,7 @@ import classNames from "classnames";
 import _ from "lodash";
 
 export interface DeleteIconButtonArgs {
-  onDelete: () => void;
+  onDelete?: () => void;
 }
 
 const DeleteIconButton: FC<DeleteIconButtonArgs> = ({ onDelete }) => {
@@ -21,7 +21,7 @@ const DeleteIconButton: FC<DeleteIconButtonArgs> = ({ onDelete }) => {
         if (timeoutId.current != null) {
           clearTimeout(timeoutId.current);
         }
-        onDelete();
+        onDelete?.();
         return false;
       }
       else {

@@ -3,21 +3,24 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import AddIcon from "@mui/icons-material/Add";
 import BillListItem from "./BillListItem";
 import BillEditDialog from "../BillEditDialog/BillEditDialog";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import BillDetailDialog from "../BillDetailDialog/BillDetailDialog";
 import { BillInfo } from "../../utils/BillInfo";
 import dayjs from "dayjs";
 import { nanoid } from "nanoid";
+import { GlobalContext } from "../../contexts/GlobalContext";
 
 // FIX:
 
 function BillPanel() {
+  const globalContext = useContext(GlobalContext);
+
   const [isDetailOpen, setIsDetailOpen] = useState<boolean>(false);
   const [billDetailInfo, setBillDetailInfo] = useState<BillInfo>({
     id: nanoid(),
     amount: 0,
     payer: "payer",
-    description: "Bill not exist",
+    description: "Bill detail not exist",
     lenders: [],
     date: dayjs(),
   });
@@ -28,8 +31,9 @@ function BillPanel() {
   
   const [billEditInfo, setBillEditInfo] = useState<BillInfo | null>(null);
   const [isEditOpen, setIsEditOpen] = useState<boolean>(false);
-  function handleBillChange() {
+  function handleBillChange(billInfo: BillInfo) {
     setIsEditOpen(false);
+    globalContext.updateBill(billInfo);
   }
   function handleEditOpen(billInfo: BillInfo) {
     setBillEditInfo(billInfo);
@@ -55,47 +59,26 @@ function BillPanel() {
         {
           // TODO: add color difference between old and even lines + add hover color change and make it clickable
         }
-        <BillListItem
-          billInfo={{
-            id: "sfjjsfds",
-            amount: 0.1,
-            date: dayjs("2018-04-04T16:00:00.000Z"),
-            payer: "kelly",
-            lenders: ["bill", "bill2", "hie", "hihdfg"],
-            description: "Lorem ipsum dolor sit aliquam.",
-          }}
-          onDetailOpen={handleDetailOpen}
-          onEditOpen={handleEditOpen}
-        />
-        <BillListItem
-          billInfo={{
-            id: "dsf",
-            amount: 23.535,
-            date: dayjs("2018-04-04T16:00:00.000Z"),
-            payer: "Kelly",
-            lenders: ["bill", "hihdfg"],
-            description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit dui.",
-          }}
-          onDetailOpen={handleDetailOpen}
-          onEditOpen={handleEditOpen}
-        />
-        <BillListItem
-          billInfo={{
-            id: "dsfsa",
-            amount: 65535.78,
-            date: dayjs("2018-04-04T16:00:00.000Z"),
-            payer: "Kelly",
-            lenders: ["bill", "hihdfg"],
-            description: "Lorem ipsum",
-          }}
-          onDetailOpen={handleDetailOpen}
-          onEditOpen={handleEditOpen}
-        />
+        {globalContext?.bills.map((v) => (
+          <BillListItem
+            key={v.id}
+            billInfo={{
+              id: v.id,
+              amount: v.amount,
+              date: v.date,
+              payer: v.payer,
+              lenders: v.lenders,
+              description: v.description,
+            }}
+            onDetailOpen={handleDetailOpen}
+            onEditOpen={handleEditOpen}
+          />
+        ))}
       </List>
       <BillEditDialog
         isOpen={isEditOpen}
         onCancel={() => setIsEditOpen(false)}
-        onConfirm={() => handleBillChange()}
+        onConfirm={handleBillChange}
         billInfo={billEditInfo}
       />
       <BillDetailDialog

@@ -1,15 +1,18 @@
 import { AppBar, IconButton, List, Toolbar, Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import MemberListItem from "./MemberListItem";
-import { useState } from "react";
-import MemberEditDialog from "../MemberEditDialog/MemberEditDialog";
+import { useContext, useState } from "react";
+import { GlobalContext } from "../../contexts/GlobalContext";
+import MemberAddDialog from "../MemberAddDialog/MemberAddDialog";
 
 function MemberPanel() {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
-  function handleMemberEditConfirm(memberName) {
+  const { members, addMember } = useContext(GlobalContext)!;
+
+  function handleMemberEditConfirm(memberName: string) {
     setIsDialogOpen(false);
-    // and new member to memberList(not create yet)
+    addMember(memberName);
   }
 
   return (
@@ -26,19 +29,12 @@ function MemberPanel() {
       </AppBar>
 
       <List>
-        <MemberListItem name="this bill is not that bill" />
-        <MemberListItem name="Bill Peng" />
-        <MemberListItem name="Emily" />
-        <MemberListItem name="Kelly" />
-        <MemberListItem name="this bill is notooo that bill" />
-        <MemberListItem name="this bill ioos not that bill" />
-        <MemberListItem name="this obill is not that =======++++\
-          ========================== bill" />
-        <MemberListItem name="this boill is not that bill" />
-        <MemberListItem name="aaaaaaaaaaaaaaaaaaaaaa" />
+        {members.map((v) => (
+          <MemberListItem key={v} name={v} />
+        ))}
       </List>
 
-      <MemberEditDialog
+      <MemberAddDialog
         isOpen={isDialogOpen}
         onCancel={() => setIsDialogOpen(false)}
         onConfirm={(memberName) => handleMemberEditConfirm(memberName)}

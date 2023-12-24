@@ -8,20 +8,18 @@ import {
 import { FC, useState } from "react";
 import ValidatedTextField from "../common/ValidatedTextField";
 
-export interface MemberEditArgs {
-  name?: string;
+export interface MemberAddArgs {
   isOpen: boolean;
   onCancel: () => void;
   onConfirm: (memberName: string) => void;
 }
 
-const MemberEditDialog: FC<MemberEditArgs> = ({
+const MemberAddDialog: FC<MemberAddArgs> = ({
   isOpen,
-  name,
   onCancel,
   onConfirm,
 }) => {
-  const [memberName, setMemberName] = useState<string>(name ?? "");
+  const [memberName, setMemberName] = useState<string>("");
 
   return (
     <Dialog open={isOpen} maxWidth="xs" fullWidth>
@@ -41,15 +39,20 @@ const MemberEditDialog: FC<MemberEditArgs> = ({
           value={memberName}
           onChange={(e) => setMemberName(e.target.value)}
         />
-
       </DialogContent>
       <DialogActions>
-        <Button variant="text" onClick={onCancel}>
+        <Button
+          variant="text"
+          onClick={() => {
+            onCancel();
+            setMemberName("");
+          }}
+        >
           Cancel
         </Button>
         <Button
           variant="text"
-          onClick={() => onConfirm(memberName)}
+          onClick={() => {onConfirm(memberName); setMemberName("");}}
           disabled={memberName === ""}
         >
           Done
@@ -59,4 +62,4 @@ const MemberEditDialog: FC<MemberEditArgs> = ({
   );
 };
 
-export default MemberEditDialog;
+export default MemberAddDialog;

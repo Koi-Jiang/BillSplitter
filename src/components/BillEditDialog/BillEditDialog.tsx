@@ -9,7 +9,7 @@ import {
   MenuItem,
   Select,
 } from "@mui/material";
-import { FC, useEffect, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import MoneyInput from "../MoneyInput/MoneyInput";
 import ValidatedTextField from "../common/ValidatedTextField";
 import CheckmarksSelect from "../common/CheckmarkSelect";
@@ -17,6 +17,7 @@ import { BillInfo } from "../../utils/BillInfo";
 import dayjs, { Dayjs } from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers";
 import { nanoid } from "nanoid";
+import { GlobalContext } from "../../contexts/GlobalContext";
 
 const MenuProps = {
   PaperProps: {
@@ -81,17 +82,7 @@ const BillEditDialog: FC<BillEditArgs> = ({
   }
 
   const [dateError, setDateError] = useState<boolean>(false);
-
-  // FIX:
-  const memberArr = [
-    "John Cena",
-    "John Doe",
-    "Jesus",
-    "What",
-    "a very long name with break in it",
-    "averylongnamewithnobreakinit",
-    "oh, hello there",
-  ];
+  const { members } = useContext(GlobalContext);
 
   return (
     <Dialog open={isOpen} maxWidth="xs" fullWidth>
@@ -145,8 +136,8 @@ const BillEditDialog: FC<BillEditArgs> = ({
             }}
             MenuProps={MenuProps}
           >
-            {memberArr.map((v, i) => (
-              <MenuItem className="h-[54px]" value={v} key={i}>
+            {members.map((v) => (
+              <MenuItem className="h-[54px]" value={v} key={v}>
                 {v}
               </MenuItem>
             ))}
@@ -155,18 +146,24 @@ const BillEditDialog: FC<BillEditArgs> = ({
 
         <CheckmarksSelect
           value={bill.lenders}
-          options={memberArr}
+          options={members}
           label="Lenders"
           onChange={(value) => handleLendersChange(value)}
         />
       </DialogContent>
       <DialogActions>
-        <Button variant="text" onClick={onCancel}>
+        <Button
+          variant="text"
+          onClick={() => {
+            onCancel();
+            setBill(createEmptyBill());
+          }}
+        >
           Cancel
         </Button>
         <Button
           variant="text"
-          onClick={() => onConfirm(bill!)}
+          onClick={() => {onConfirm(bill!); setBill(createEmptyBill());}}
           disabled={
             bill.amount === 0 ||
             bill.description === "" ||

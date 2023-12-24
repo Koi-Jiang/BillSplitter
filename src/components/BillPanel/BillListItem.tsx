@@ -1,9 +1,10 @@
 import { IconButton, ListItem, ListItemText, useTheme } from "@mui/material";
-import { FC, useMemo } from "react";
+import { FC, useContext, useMemo } from "react";
 import { numberFormatter } from "../../utils/numberFormatter";
 import { BillInfo } from "../../utils/BillInfo";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIconButton from "../common/DeleteIconButton/DeleteIconButton";
+import { GlobalContext } from "../../contexts/GlobalContext";
 
 export interface BillListItemArgs {
   billInfo: BillInfo;
@@ -27,6 +28,7 @@ const BillListItem: FC<BillListItemArgs> = ({
   );
 
   const { palette } = useTheme();
+  const { deleteBill } = useContext(GlobalContext)!;
 
   return (
     <ListItem>
@@ -57,10 +59,10 @@ const BillListItem: FC<BillListItemArgs> = ({
           className: "md:text-[34px] text-2xl",
         }}
       />
-      <IconButton>
-        <EditIcon onClick={() => onEditOpen(billInfo)}/>
+      <IconButton onClick={() => onEditOpen(billInfo)}>
+        <EditIcon />
       </IconButton>
-      <DeleteIconButton onDelete={() => console.log("delete")}/>
+      <DeleteIconButton onDelete={() => deleteBill(billInfo.id)}/>
     </ListItem>
   );
 };
