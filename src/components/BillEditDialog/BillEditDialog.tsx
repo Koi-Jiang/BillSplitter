@@ -16,8 +16,8 @@ import CheckmarksSelect from "../common/CheckmarkSelect";
 import { BillInfo } from "../../utils/billInfo";
 import dayjs, { Dayjs } from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers";
-import { nanoid } from "nanoid";
 import { GlobalContext } from "../../contexts/GlobalContext";
+import { plainToInstance } from "class-transformer";
 
 const MenuProps = {
   PaperProps: {
@@ -35,25 +35,16 @@ export interface BillEditArgs {
   onConfirm: (billInfo: BillInfo) => void;
 }
 
-const createEmptyBill = () => ({
-  id: nanoid(),
-  amount: 0,
-  description: "",
-  payer: "",
-  lenders: [],
-  date: dayjs(),
-});
-
 const BillEditDialog: FC<BillEditArgs> = ({
   billInfo,
   isOpen,
   onCancel,
   onConfirm,
 }) => {
-  const [bill, setBill] = useState<BillInfo>(billInfo ?? createEmptyBill());
+  const [bill, setBill] = useState<BillInfo>(billInfo ?? new BillInfo());
 
   useEffect(() => {
-    setBill(billInfo ?? createEmptyBill());
+    setBill(billInfo ?? new BillInfo());
   }, [billInfo]);
 
   function handleAmountChange(value: number) {
@@ -63,8 +54,8 @@ const BillEditDialog: FC<BillEditArgs> = ({
   function handleDescriptionChange(value: string) {
     setBill({ ...bill, description: value });
   }
-  function handlePayerChange(value: string | null) {
-    setBill({ ...bill, payer: value ?? "" });
+  function handlePayerChange(value: string) {
+    setBill({ ...bill, payer: value });
   }
   function handleLendersChange(value: string[]) {
     setBill({ ...bill, lenders: value });
@@ -83,6 +74,12 @@ const BillEditDialog: FC<BillEditArgs> = ({
 
   const [dateError, setDateError] = useState<boolean>(false);
   const { members } = useContext(GlobalContext);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setBill(new BillInfo());
+    }
+  }, [isOpen]);
 
   return (
     <Dialog open={isOpen} maxWidth="xs" fullWidth>
@@ -156,14 +153,14 @@ const BillEditDialog: FC<BillEditArgs> = ({
           variant="text"
           onClick={() => {
             onCancel();
-            setBill(createEmptyBill());
+            setBill(new BillInfo());
           }}
         >
           Cancel
         </Button>
         <Button
           variant="text"
-          onClick={() => {onConfirm(bill!); setBill(createEmptyBill());}}
+          onClick={() => onConfirm(plainToInstance(BillInfo, { ...bill, date: bill.date.toISOString() }))}
           disabled={
             bill.amount === 0 ||
             bill.description === "" ||

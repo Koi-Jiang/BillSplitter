@@ -15,11 +15,12 @@ import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import RoomPage from "./components/RoomPage/RoomPage";
-import { grey } from "@mui/material/colors";
+// import { grey } from "@mui/material/colors";
 import dayjs from "dayjs";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import "reflect-metadata";
 
 const breakpoints = {
   values: {
@@ -41,18 +42,18 @@ const darkTheme = createTheme({
   breakpoints,
 });
 
-const lightTheme = createTheme({
-  palette: {
-    mode: "light",
-    primary: {
-      main: "#7c4dff",
-    },
-    background: {
-      default: grey[100],
-    },
-  },
-  breakpoints,
-});
+// const lightTheme = createTheme({
+//   palette: {
+//     mode: "light",
+//     primary: {
+//       main: "#7c4dff",
+//     },
+//     background: {
+//       default: grey[100],
+//     },
+//   },
+//   breakpoints,
+// });
 
 const router = createBrowserRouter([
   {

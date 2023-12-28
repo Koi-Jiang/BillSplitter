@@ -8,10 +8,16 @@ import {
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { createRoomData } from "../../firebase/database";
 
 function FrontPage() {
   const [name, setName] = useState<string>("");
   const navigate = useNavigate();
+
+  async function handleCreateRoom() {
+    const editableId = await createRoomData(name);
+    navigate(`/${editableId}`);
+  }
 
   return (
     <Container
@@ -33,12 +39,12 @@ function FrontPage() {
           required
           value={name}
           onChange={(e) => setName(e.target.value)}
-          onKeyUp={(e) => e.code === "Enter" && navigate(`/${name}`)}
+          onKeyUp={async (e) => e.code === "Enter" && await handleCreateRoom()}
         />
         <IconButton
           color="primary"
           disabled={name.trim() === ""}
-          href={`/${name}`}
+          onClick={handleCreateRoom}
         >
           <ArrowForwardIcon fontSize="large" />
         </IconButton>

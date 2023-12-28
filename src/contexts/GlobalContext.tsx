@@ -1,9 +1,22 @@
-import { FC, PropsWithChildren, createContext, useMemo, useState } from "react";
+import {
+  FC,
+  PropsWithChildren,
+  createContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { BillInfo } from "../utils/billInfo";
 import { Map, OrderedMap, OrderedSet } from "immutable";
-import dayjs from "dayjs";
 import { Transaction } from "../utils/transaction";
 import _ from "lodash";
+import {
+  addMemberData,
+  deleteMemberData,
+  getRoomData,
+  updateBillData,
+} from "../firebase/database";
+import { useNavigate, useParams } from "react-router-dom";
 
 export interface GlobalContextArgs {
   members: string[];
@@ -13,51 +26,45 @@ export interface GlobalContextArgs {
   deleteMember: (member: string) => boolean;
   updateBill: (billInfo: BillInfo) => void;
   deleteBill: (id: string) => void;
+  isEditableLink: boolean;
+  roomName: string;
+  readonlyId: string;
 }
 
 // NOTE: set + immutable.js
 export const GlobalContext = createContext<GlobalContextArgs>(null!);
 
 const GlobalContextProvider: FC<PropsWithChildren> = ({ children }) => {
+  const roomLink = useParams().roomId!;
+  const [isEditableLink, setIsEditableLink] = useState<boolean>(false);
+  const [roomName, setRoomName] = useState<string>("Loading...");
+  const [readonlyId, setReadonlyId] = useState<string>("");
   const [memberSet, setMemberSet] = useState<OrderedSet<string>>(
-    OrderedSet(["Bill", "Emily", "Kelly", "Alan", "aaaaaaaaaaaaaaaaaaaa"]),
+    OrderedSet([]),
   );
   const [billMap, setBillMap] = useState<OrderedMap<string, BillInfo>>(
-    Map<string, BillInfo>({
-      ["1"]: {
-        id: "1",
-        amount: 100,
-        date: dayjs("2023-12-12T16:00:00.000Z"),
-        payer: "Bill",
-        lenders: ["Bill", "Emily", "Kelly", "Alan"],
-        description: "A",
-      },
-      ["2"]: {
-        id: "2",
-        amount: 75,
-        date: dayjs("2023-12-13T16:00:00.000Z"),
-        payer: "Emily",
-        lenders: ["Bill", "Emily", "Kelly"],
-        description: "B",
-      },
-      ["3"]: {
-        id: "3",
-        amount: 75,
-        date: dayjs("2023-12-14T16:00:00.000Z"),
-        payer: "Alan",
-        lenders: ["Emily", "Kelly", "Alan"],
-        description: "C",
-      },
-      ["4"]: {
-        id: "4",
-        amount: 20,
-        date: dayjs("2023-12-15T16:00:00.000Z"),
-        payer: "Kelly",
-        lenders: ["Emily", "Kelly"],
-        description: "D",
-      },
-    }),
+    Map<string, BillInfo>({}),
   );
+
+  const navigate = useNavigate();
+
+  async function loadRoomData() {
+    const roomData = await getRoomData(roomLink!);
+    if (roomData == null) {
+      alert("This room doesn't exist");
+      navigate("/");
+      return;
+    }
+    setRoomName(roomData.room.roomName);
+    setIsEditableLink(roomData.editable);
+    setReadonlyId(roomData.room.readonlyId);
+    setMemberSet(OrderedSet(roomData.room.members));
+    setBillMap(Map(roomData.room.billInfos.map((v) => [v.id, v])));
+  }
+
+  useEffect(() => {
+    loadRoomData();
+  }, []);
 
   function addMember(member: string) {
     if (memberSet.has(member)) {
@@ -65,6 +72,7 @@ const GlobalContextProvider: FC<PropsWithChildren> = ({ children }) => {
       return;
     }
     setMemberSet(memberSet.add(member));
+    addMemberData(roomLink, member);
   }
 
   const deleteMember = (member: string) => {
@@ -76,21 +84,30 @@ const GlobalContextProvider: FC<PropsWithChildren> = ({ children }) => {
       }
     }
 
-    // NOTE: parse in a function to make sure v is the newest state and 
+    // NOTE: parse in a function to make sure v is the newest state and
     //       set the state to the returned value
     setMemberSet((v) => v.delete(member));
+    deleteMemberData(roomLink, member);
     return true;
   };
 
   function updateBill(billInfo: BillInfo) {
-    setBillMap(billMap.set(billInfo.id, billInfo));
+    const newBills = billMap.set(billInfo.id, billInfo);
+    setBillMap(newBills);
+    updateBillData(roomLink, newBills.valueSeq().toArray());
   }
 
   function deleteBill(id: string) {
-    setBillMap((v) => v.delete(id));
+    setBillMap((v) => {
+      const newMap = v.delete(id);
+      updateBillData(roomLink, newMap.valueSeq().toArray());
+      return newMap;
+    });
   }
 
   function calcResults(): Transaction[] {
+    // skip if bills or members are null
+    if (bills.length == 0 || members.length == 0) return [];
 
     // 1. create a table of member and its cumulative credits, init to 0
     const cumulativeCredits: Record<string, number> = {};
@@ -111,8 +128,9 @@ const GlobalContextProvider: FC<PropsWithChildren> = ({ children }) => {
     }
 
     // 3. group the members by sign
-    const group = _.groupBy(Object.entries(cumulativeCredits),
-      ([,v]) => Math.sign(v));
+    const group = _.groupBy(Object.entries(cumulativeCredits), ([, v]) =>
+      Math.sign(v),
+    );
 
     // 4. sort the positive and negative list so that the first element
     //    is the one with the largest amount
@@ -157,8 +175,7 @@ const GlobalContextProvider: FC<PropsWithChildren> = ({ children }) => {
         posList.shift();
 
         // if there is no more positive member, break the loop
-        if (posList.length === 0)
-          break;
+        if (posList.length === 0) break;
 
         // update the amount needed for the current positive member
         posNeed = posList[0][1];
@@ -171,8 +188,7 @@ const GlobalContextProvider: FC<PropsWithChildren> = ({ children }) => {
 
         // this is not necessary since the two list should be empty
         // at the same time, but just in case
-        if (negList.length === 0)
-          break;
+        if (negList.length === 0) break;
 
         // update the amount left for the current negative member
         negLeft = negList[0][1];
@@ -196,6 +212,9 @@ const GlobalContextProvider: FC<PropsWithChildren> = ({ children }) => {
         deleteMember,
         updateBill,
         deleteBill,
+        isEditableLink,
+        roomName,
+        readonlyId,
       }}
     >
       {children}

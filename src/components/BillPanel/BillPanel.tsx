@@ -6,8 +6,6 @@ import BillEditDialog from "../BillEditDialog/BillEditDialog";
 import { useContext, useState } from "react";
 import BillDetailDialog from "../BillDetailDialog/BillDetailDialog";
 import { BillInfo } from "../../utils/billInfo";
-import dayjs from "dayjs";
-import { nanoid } from "nanoid";
 import { GlobalContext } from "../../contexts/GlobalContext";
 
 // FIX:
@@ -16,19 +14,14 @@ function BillPanel() {
   const globalContext = useContext(GlobalContext);
 
   const [isDetailOpen, setIsDetailOpen] = useState<boolean>(false);
-  const [billDetailInfo, setBillDetailInfo] = useState<BillInfo>({
-    id: nanoid(),
-    amount: 0,
-    payer: "payer",
-    description: "Bill detail not exist",
-    lenders: [],
-    date: dayjs(),
-  });
+  const [billDetailInfo, setBillDetailInfo] = useState<BillInfo>(
+    new BillInfo(),
+  );
   function handleDetailOpen(billInfo: BillInfo) {
     setBillDetailInfo(billInfo);
     setIsDetailOpen(true);
   }
-  
+
   const [billEditInfo, setBillEditInfo] = useState<BillInfo | null>(null);
   const [isEditOpen, setIsEditOpen] = useState<boolean>(false);
   function handleBillChange(billInfo: BillInfo) {
@@ -60,22 +53,17 @@ function BillPanel() {
           // TODO: add color difference between old and even lines + add hover color change and make it clickable
         }
         {globalContext?.bills
-          .toSorted((a,b) => {return a.date.isBefore(b.date) ? 1 : -1})
+          .toSorted((a, b) => {
+            return a.date.isBefore(b.date) ? 1 : -1;
+          })
           .map((v) => (
-          <BillListItem
-            key={v.id}
-            billInfo={{
-              id: v.id,
-              amount: v.amount,
-              date: v.date,
-              payer: v.payer,
-              lenders: v.lenders,
-              description: v.description,
-            }}
-            onDetailOpen={handleDetailOpen}
-            onEditOpen={handleEditOpen}
-          />
-        ))}
+            <BillListItem
+              key={v.id}
+              billInfo={v}
+              onDetailOpen={handleDetailOpen}
+              onEditOpen={handleEditOpen}
+            />
+          ))}
       </List>
       <BillEditDialog
         isOpen={isEditOpen}

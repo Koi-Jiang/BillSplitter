@@ -12,7 +12,6 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
-import { useParams } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
 import SettingsIcon from "@mui/icons-material/Settings";
 import ShareIcon from "@mui/icons-material/Share";
@@ -22,10 +21,9 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import MemberPanel from "../MemberPanel/MemberPanel";
 import BillPanel from "../BillPanel/BillPanel";
 import ResultPanel from "../ResultPanel/ResultPanel";
-import GlobalContextProvider from "../../contexts/GlobalContext";
+import GlobalContextProvider, { GlobalContext } from "../../contexts/GlobalContext";
 
 function RoomPage() {
-  const { roomId } = useParams();
   const theme = useTheme();
   const mediumAndUp = useMediaQuery(() => theme.breakpoints.up("md"));
 
@@ -50,7 +48,9 @@ function RoomPage() {
                 className="whitespace-nowrap 
                 overflow-hidden text-ellipsis w-[60vw]"
               >
-                {roomId}
+                <GlobalContext.Consumer>
+                  {(context) => context.roomName}
+                </GlobalContext.Consumer>
               </Typography>
             </div>
             <IconButton

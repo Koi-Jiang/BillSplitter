@@ -1,0 +1,28 @@
+diff --git a/index.cjs b/index.cjs
+index 18f40a9d4d0e2111f204361033c91010af42ef0c..eea97f3cce54f8a54a95aa75993a5830caad28a1 100644
+--- a/index.cjs
++++ b/index.cjs
+@@ -166,7 +166,8 @@ var transformWithOptions = async (id, code, target, options, reactConfig) => {
+         experimental: { plugins: options.plugins },
+         transform: {
+           useDefineForClassFields: true,
+-          react: reactConfig
++          react: reactConfig,
++          decoratorMetadata: decorators,
+         }
+       }
+     });
+diff --git a/index.mjs b/index.mjs
+index 9890b3ab125e364189e612569d98a7e7a9afb840..ba3a5837f9e75ac877b7246f01c077a20fef2fd5 100644
+--- a/index.mjs
++++ b/index.mjs
+@@ -167,7 +167,8 @@ var transformWithOptions = async (id, code, target, options, reactConfig) => {
+         experimental: { plugins: options.plugins },
+         transform: {
+           useDefineForClassFields: true,
+-          react: reactConfig
++          react: reactConfig,
++          decoratorMetadata: decorators,
+         }
+       }
+     });

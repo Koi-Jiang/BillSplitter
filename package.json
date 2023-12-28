@@ -17,8 +17,10 @@
     "@mui/material": "^5.14.20",
     "@mui/x-date-pickers": "^6.18.5",
     "boring-avatars": "^1.10.1",
+    "class-transformer": "^0.5.1",
     "classnames": "^2.3.2",
     "dayjs": "^1.11.10",
+    "firebase": "^10.7.1",
     "immutable": "5.0.0-beta.4",
     "localforage": "^1.10.0",
     "lodash": "^4.17.21",
@@ -28,6 +30,7 @@
     "react-dom": "^18.2.0",
     "react-number-format": "^5.3.1",
     "react-router-dom": "^6.20.1",
+    "reflect-metadata": "^0.2.1",
     "sort-by": "^1.2.0"
   },
   "devDependencies": {
@@ -44,11 +47,17 @@
     "eslint-plugin-react-refresh": "^0.4.4",
     "postcss": "^8.4.32",
     "prettier": "3.1.0",
+    "rollup-plugin-swc": "^0.2.1",
     "sass": "^1.69.5",
     "tailwindcss": "^3.3.6",
     "typescript": "^5.2.2",
     "vite": "^5.0.0",
     "vite-plugin-pwa": "^0.17.3",
     "vite-plugin-svgr": "^4.2.0"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "@vitejs/plugin-react-swc@3.5.0": "patches/@vitejs__plugin-react-swc@3.5.0.patch"
+    }
   }
 }
