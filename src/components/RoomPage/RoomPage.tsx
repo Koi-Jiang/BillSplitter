@@ -21,7 +21,10 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import MemberPanel from "../MemberPanel/MemberPanel";
 import BillPanel from "../BillPanel/BillPanel";
 import ResultPanel from "../ResultPanel/ResultPanel";
-import GlobalContextProvider, { GlobalContext } from "../../contexts/GlobalContext";
+import GlobalContextProvider, {
+  GlobalContext,
+} from "../../contexts/GlobalContext";
+import LinkDisplayDialog from "../LinkDisplayDialog/LinkDisplayDialog";
 
 function RoomPage() {
   const theme = useTheme();
@@ -31,6 +34,18 @@ function RoomPage() {
   // 2. store mutable element which won't effect page change
   const shareMenuAnchor = useRef<HTMLButtonElement>(null);
   const [shareMenuOpen, setShareMenuOpen] = useState<boolean>(false);
+
+  const [linkDisplayOpen, setLinkDisplayOpen] = useState<boolean>(false);
+  const [isEditLinkDisplay, setIsEditLinkDisplay] = useState<boolean>(false);
+  const [shareLink, setShareLink] = useState<string>("");
+
+  function handleCopyLink(editable: boolean, link: string) {
+    setLinkDisplayOpen(true);
+    setIsEditLinkDisplay(editable);
+    setShareLink(link);
+    // copy it to system clipboard
+    navigator.clipboard.writeText(link);
+  }
 
   return (
     <GlobalContextProvider>
@@ -66,13 +81,27 @@ function RoomPage() {
               open={shareMenuOpen}
               onClose={() => setShareMenuOpen(false)}
             >
-              <MenuItem>
-                <ListItemIcon>
-                  <VisibilityIcon fontSize="small" />
-                </ListItemIcon>
-                <ListItemText> Copy Read-only Link </ListItemText>
-              </MenuItem>
-              <MenuItem>
+              <GlobalContext.Consumer>
+                {(context) => (
+                  <MenuItem
+                    onClick={() =>
+                      handleCopyLink(
+                        false,
+                        window.location.origin + "/" + context.readonlyId,
+                      )
+                    }
+                  >
+                    <ListItemIcon>
+                      <VisibilityIcon fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText> Copy Read-only Link </ListItemText>
+                  </MenuItem>
+                )}
+              </GlobalContext.Consumer>
+
+              <MenuItem
+                onClick={() => handleCopyLink(true, window.location.href)}
+              >
                 <ListItemIcon>
                   <EditIcon fontSize="small" />
                 </ListItemIcon>
@@ -122,6 +151,12 @@ function RoomPage() {
           </Paper>
         </Box>
       </Box>
+      <LinkDisplayDialog
+        link={shareLink}
+        isOpen={linkDisplayOpen}
+        isEditLink={isEditLinkDisplay}
+        onCancel={() => setLinkDisplayOpen(false)}
+      />
     </GlobalContextProvider>
   );
 }
