@@ -1,8 +1,4 @@
-import {
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-} from "@mui/material";
+import { ListItem, ListItemAvatar, ListItemText } from "@mui/material";
 import { FC, useContext } from "react";
 import Avatar from "boring-avatars";
 import DeleteIconButton from "../common/DeleteIconButton/DeleteIconButton";
@@ -10,16 +6,18 @@ import { GlobalContext } from "../../contexts/GlobalContext";
 
 export interface MemberListItemArgs {
   name: string;
+  handleDeleteMemberAlert: (isMemberDeteled: boolean) => void;
 }
 
-const MemberListItem: FC<MemberListItemArgs> = ({ name }) => {
+const MemberListItem: FC<MemberListItemArgs> = ({
+  name,
+  handleDeleteMemberAlert,
+}) => {
   const { deleteMember } = useContext(GlobalContext)!;
 
   function tryDeleteMember(name: string) {
-    if (!deleteMember(name)) {
-      // TODO: Use snackbar
-      alert("Cannot delete this member because there are bills related to this member.");
-    }
+    const isMemberDeteled = deleteMember(name);
+    handleDeleteMemberAlert(isMemberDeteled);
   }
 
   return (
@@ -42,7 +40,7 @@ const MemberListItem: FC<MemberListItemArgs> = ({ name }) => {
         }}
         className="ml-4"
       />
-      <DeleteIconButton onDelete={() => tryDeleteMember(name)}/>
+      <DeleteIconButton onDelete={() => tryDeleteMember(name)} />
     </ListItem>
   );
 };

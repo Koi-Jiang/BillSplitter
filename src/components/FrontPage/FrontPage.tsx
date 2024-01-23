@@ -9,6 +9,7 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createRoomData } from "../../firebase/database";
+import { ROOM_NAME_MAX_LENGTH } from "../../utils/constants";
 
 function FrontPage() {
   const [name, setName] = useState<string>("");
@@ -35,11 +36,16 @@ function FrontPage() {
           variant="standard"
           margin="none"
           placeholder="What is it called..?"
-          inputProps={{ maxLength: 50, style: { fontSize: "xx-large" } }}
+          inputProps={{
+            maxLength: ROOM_NAME_MAX_LENGTH,
+            style: { fontSize: "xx-large" },
+          }}
           required
           value={name}
           onChange={(e) => setName(e.target.value)}
-          onKeyUp={async (e) => e.code === "Enter" && await handleCreateRoom()}
+          onKeyUp={async (e) =>
+            e.code === "Enter" && (await handleCreateRoom())
+          }
         />
         <IconButton
           color="primary"

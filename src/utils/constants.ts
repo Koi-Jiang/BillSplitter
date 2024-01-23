@@ -1,1 +1,2 @@
 export const SNACKBAR_HIDE_DURATION = 4000;
+export const ROOM_NAME_MAX_LENGTH = 50;

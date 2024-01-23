@@ -14,6 +14,7 @@ import {
   addMemberData,
   deleteMemberData,
   getRoomData,
+  renameRoomData,
   updateBillData,
 } from "../firebase/database";
 import { useNavigate, useParams } from "react-router-dom";
@@ -22,6 +23,7 @@ export interface GlobalContextArgs {
   members: string[];
   bills: BillInfo[];
   transactions: Transaction[];
+  renameRoom: (newName: string) => void;
   addMember: (member: string) => boolean;
   deleteMember: (member: string) => boolean;
   updateBill: (billInfo: BillInfo) => void;
@@ -65,6 +67,11 @@ const GlobalContextProvider: FC<PropsWithChildren> = ({ children }) => {
   useEffect(() => {
     loadRoomData();
   }, []);
+
+  function renameRoom(newName: string) {
+    renameRoomData(roomLink, newName);
+    setRoomName(newName);
+  }
 
   function addMember(member: string): boolean {
     if (memberSet.has(member)) {
@@ -208,6 +215,7 @@ const GlobalContextProvider: FC<PropsWithChildren> = ({ children }) => {
         members,
         bills,
         transactions,
+        renameRoom,
         addMember,
         deleteMember,
         updateBill,

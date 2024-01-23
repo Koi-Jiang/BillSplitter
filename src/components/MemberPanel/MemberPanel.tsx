@@ -1,9 +1,18 @@
-import { AppBar, IconButton, List, Toolbar, Typography } from "@mui/material";
+import {
+  Alert,
+  AppBar,
+  IconButton,
+  List,
+  Snackbar,
+  Toolbar,
+  Typography,
+} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import MemberListItem from "./MemberListItem";
 import { useContext, useState } from "react";
 import { GlobalContext } from "../../contexts/GlobalContext";
 import MemberAddDialog from "../MemberAddDialog/MemberAddDialog";
+import { SNACKBAR_HIDE_DURATION } from "../../utils/constants";
 
 function MemberPanel() {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
@@ -14,6 +23,16 @@ function MemberPanel() {
     setIsDialogOpen(false);
     const isMemberAdded = addMember(memberName);
     return isMemberAdded;
+  }
+
+  const [isSuccessSnackbarOpen, setIsSuccessSnackbarOpen] =
+    useState<boolean>(false);
+  const [isErrorSnackbarOpen, setIsErrorSnackbarOpen] =
+    useState<boolean>(false);
+
+  function handleDeleteMemberAlert(isMemberDeteled: boolean) {
+    setIsSuccessSnackbarOpen(isMemberDeteled);
+    setIsErrorSnackbarOpen(!isMemberDeteled);
   }
 
   return (
@@ -31,7 +50,11 @@ function MemberPanel() {
 
       <List>
         {members.map((v) => (
-          <MemberListItem key={v} name={v} />
+          <MemberListItem
+            key={v}
+            name={v}
+            handleDeleteMemberAlert={handleDeleteMemberAlert}
+          />
         ))}
       </List>
 
@@ -40,6 +63,26 @@ function MemberPanel() {
         onCancel={() => setIsDialogOpen(false)}
         onConfirm={(memberName) => handleMemberEditConfirm(memberName)}
       />
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={isSuccessSnackbarOpen}
+        autoHideDuration={SNACKBAR_HIDE_DURATION}
+        onClose={() => setIsSuccessSnackbarOpen(false)}
+      >
+        <Alert variant="outlined" severity="success">
+          Successfully delete the member
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={isErrorSnackbarOpen}
+        autoHideDuration={SNACKBAR_HIDE_DURATION}
+        onClose={() => setIsErrorSnackbarOpen(false)}
+      >
+        <Alert variant="outlined" severity="error">
+          Cannot delete a member in existing bills
+        </Alert>
+      </Snackbar>
     </>
   );
 }

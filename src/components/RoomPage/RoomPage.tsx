@@ -15,6 +15,7 @@ import {
 import { useTheme } from "@mui/material/styles";
 import SettingsIcon from "@mui/icons-material/Settings";
 import ShareIcon from "@mui/icons-material/Share";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import { useRef, useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -25,6 +26,7 @@ import GlobalContextProvider, {
   GlobalContext,
 } from "../../contexts/GlobalContext";
 import LinkDisplayDialog from "../LinkDisplayDialog/LinkDisplayDialog";
+import RenameRoomDialog from "../RenameRoomDialog/RanameRoomDialog";
 
 function RoomPage() {
   const theme = useTheme();
@@ -35,9 +37,14 @@ function RoomPage() {
   const shareMenuAnchor = useRef<HTMLButtonElement>(null);
   const [shareMenuOpen, setShareMenuOpen] = useState<boolean>(false);
 
+  const settingMenuAnchor = useRef<HTMLButtonElement>(null);
+  const [settingMenuOpen, setSettingMenuOpen] = useState<boolean>(false);
+
   const [linkDisplayOpen, setLinkDisplayOpen] = useState<boolean>(false);
   const [isEditLinkDisplay, setIsEditLinkDisplay] = useState<boolean>(false);
   const [shareLink, setShareLink] = useState<string>("");
+
+  const [isRenameDialogOpen, setIsRenameDialogOpen] = useState<boolean>(false);
 
   function handleCopyLink(editable: boolean, link: string) {
     setLinkDisplayOpen(true);
@@ -56,7 +63,7 @@ function RoomPage() {
             pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] "
         >
           <Toolbar>
-            <div className="flex-auto">
+            <div className="flex-auto flex">
               <Typography
                 component="h1"
                 variant="h5"
@@ -108,9 +115,33 @@ function RoomPage() {
                 <ListItemText> Copy Editable Link </ListItemText>
               </MenuItem>
             </Menu>
-            <IconButton size="large" className="flex-none">
+
+            <IconButton
+              className="flex-none"
+              size="large"
+              ref={settingMenuAnchor}
+              onClick={() => setSettingMenuOpen(true)}
+            >
               <SettingsIcon />
             </IconButton>
+            <Menu
+              anchorEl={settingMenuAnchor.current}
+              open={settingMenuOpen}
+              onClose={() => setSettingMenuOpen(false)}
+            >
+              <MenuItem onClick={() => setIsRenameDialogOpen(true)}>
+                <ListItemIcon>
+                  <EditIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText> Rename Room Name </ListItemText>
+              </MenuItem>
+              <MenuItem>
+                <ListItemIcon>
+                  <RestartAltIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText> Reset Room </ListItemText>
+              </MenuItem>
+            </Menu>
           </Toolbar>
         </AppBar>
 
@@ -156,6 +187,10 @@ function RoomPage() {
         isOpen={linkDisplayOpen}
         isEditLink={isEditLinkDisplay}
         onCancel={() => setLinkDisplayOpen(false)}
+      />
+      <RenameRoomDialog
+        isOpen={isRenameDialogOpen}
+        onClose={() => setIsRenameDialogOpen(false)}
       />
     </GlobalContextProvider>
   );
