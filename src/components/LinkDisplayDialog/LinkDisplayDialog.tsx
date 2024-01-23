@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { FC, useState } from "react";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import { SNACKBAR_HIDE_DURATION } from "../../utils/constants";
 
 export interface LinkDisplayDialogArgs {
   link: string;
@@ -68,10 +69,10 @@ const LinkDisplayDialog: FC<LinkDisplayDialogArgs> = ({
       <Snackbar
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
         open={isSnackbarOpen}
-        autoHideDuration={2000}
+        autoHideDuration={SNACKBAR_HIDE_DURATION}
         onClose={() => setIsSnackbarOpen(false)}
       >
-        <Alert variant="outlined">
+        <Alert variant="outlined" severity="success">
           Copied to clipboard
         </Alert>
       </Snackbar>

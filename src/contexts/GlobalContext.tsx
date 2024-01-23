@@ -22,7 +22,7 @@ export interface GlobalContextArgs {
   members: string[];
   bills: BillInfo[];
   transactions: Transaction[];
-  addMember: (member: string) => void;
+  addMember: (member: string) => boolean;
   deleteMember: (member: string) => boolean;
   updateBill: (billInfo: BillInfo) => void;
   deleteBill: (id: string) => void;
@@ -66,13 +66,13 @@ const GlobalContextProvider: FC<PropsWithChildren> = ({ children }) => {
     loadRoomData();
   }, []);
 
-  function addMember(member: string) {
+  function addMember(member: string): boolean {
     if (memberSet.has(member)) {
-      alert("Member already exists."); // TODO: use snackbar
-      return;
+      return false;
     }
     setMemberSet(memberSet.add(member));
     addMemberData(roomLink, member);
+    return true;
   }
 
   const deleteMember = (member: string) => {

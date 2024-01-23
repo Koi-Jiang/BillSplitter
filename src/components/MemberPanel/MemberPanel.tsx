@@ -10,9 +10,10 @@ function MemberPanel() {
 
   const { members, addMember } = useContext(GlobalContext)!;
 
-  function handleMemberEditConfirm(memberName: string) {
+  function handleMemberEditConfirm(memberName: string): boolean {
     setIsDialogOpen(false);
-    addMember(memberName);
+    const isMemberAdded = addMember(memberName);
+    return isMemberAdded;
   }
 
   return (
