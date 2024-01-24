@@ -133,7 +133,7 @@ function RoomPage() {
                 <ListItemIcon>
                   <EditIcon fontSize="small" />
                 </ListItemIcon>
-                <ListItemText> Rename Room Name </ListItemText>
+                <ListItemText> Rename Room </ListItemText>
               </MenuItem>
               <MenuItem>
                 <ListItemIcon>

@@ -70,7 +70,7 @@ function MemberPanel() {
         onClose={() => setIsSuccessSnackbarOpen(false)}
       >
         <Alert variant="outlined" severity="success">
-          Successfully delete the member
+          Deleted a member
         </Alert>
       </Snackbar>
       <Snackbar

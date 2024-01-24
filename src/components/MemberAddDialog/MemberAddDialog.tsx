@@ -82,7 +82,7 @@ const MemberAddDialog: FC<MemberAddArgs> = ({
         onClose={() => setIsSuccessSnackbarOpen(false)}
       >
         <Alert variant="outlined" severity="success">
-          Successfully added new member
+          Added a new member
         </Alert>
       </Snackbar>
       <Snackbar

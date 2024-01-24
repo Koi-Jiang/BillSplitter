@@ -1,4 +1,5 @@
 import {
+  Alert,
   Button,
   Dialog,
   DialogActions,
@@ -8,6 +9,7 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Snackbar,
 } from "@mui/material";
 import { FC, useContext, useEffect, useState } from "react";
 import MoneyInput from "../MoneyInput/MoneyInput";
@@ -18,6 +20,7 @@ import dayjs, { Dayjs } from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers";
 import { GlobalContext } from "../../contexts/GlobalContext";
 import { plainToInstance } from "class-transformer";
+import { SNACKBAR_HIDE_DURATION } from "../../utils/constants";
 
 const MenuProps = {
   PaperProps: {
@@ -75,6 +78,8 @@ const BillEditDialog: FC<BillEditArgs> = ({
   const [dateError, setDateError] = useState<boolean>(false);
   const { members } = useContext(GlobalContext);
 
+  const [isSnackbarOpen, setIsSnackbarOpen] = useState<boolean>(false);
+
   useEffect(() => {
     if (!isOpen) {
       setBill(new BillInfo());
@@ -82,97 +87,117 @@ const BillEditDialog: FC<BillEditArgs> = ({
   }, [isOpen]);
 
   return (
-    <Dialog open={isOpen} maxWidth="xs" fullWidth>
-      <DialogTitle>Bill</DialogTitle>
-      <DialogContent>
-        <ValidatedTextField
-          immediate={true}
-          validator={(value) =>
-            value.trim() === "" ? "Please enter a description" : ""
-          }
-          label="Description"
-          fullWidth
-          required
-          autoFocus
-          variant="standard"
-          inputProps={{ maxLength: 30 }}
-          value={bill.description}
-          onChange={(e) => handleDescriptionChange(e.target.value)}
-        />
-        <MoneyInput
-          immediate={true}
-          label="Amount"
-          value={bill.amount}
-          validator={moneyValidator}
-          onChange={handleAmountChange}
-        />
-        <DatePicker
-          slotProps={{
-            textField: {
-              fullWidth: true,
-              variant: "standard",
-              margin: "dense",
-              label: "Date",
-              required: true,
-            },
-          }}
-          format="LL"
-          value={bill.date}
-          onChange={(e) => handleDateChange(e ?? dayjs())}
-          onError={(err) => setDateError(err !== null)}
-        />
-
-        <FormControl fullWidth required margin="dense">
-          <InputLabel variant="standard">Payer</InputLabel>
-          <Select
-            value={bill.payer}
+    <>
+      <Dialog open={isOpen} maxWidth="xs" fullWidth>
+        <DialogTitle>Bill</DialogTitle>
+        <DialogContent>
+          <ValidatedTextField
+            immediate={true}
+            validator={(value) =>
+              value.trim() === "" ? "Please enter a description" : ""
+            }
+            label="Description"
+            fullWidth
             required
+            autoFocus
             variant="standard"
-            onChange={(e) => {
-              handlePayerChange(e.target.value);
+            inputProps={{ maxLength: 30 }}
+            value={bill.description}
+            onChange={(e) => handleDescriptionChange(e.target.value)}
+          />
+          <MoneyInput
+            immediate={true}
+            label="Amount"
+            value={bill.amount}
+            validator={moneyValidator}
+            onChange={handleAmountChange}
+          />
+          <DatePicker
+            slotProps={{
+              textField: {
+                fullWidth: true,
+                variant: "standard",
+                margin: "dense",
+                label: "Date",
+                required: true,
+              },
             }}
-            MenuProps={MenuProps}
-          >
-            {members.map((v) => (
-              <MenuItem className="h-[54px]" value={v} key={v}>
-                {v}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+            format="LL"
+            value={bill.date}
+            onChange={(e) => handleDateChange(e ?? dayjs())}
+            onError={(err) => setDateError(err !== null)}
+          />
 
-        <CheckmarksSelect
-          value={bill.lenders}
-          options={members}
-          label="Lenders"
-          onChange={(value) => handleLendersChange(value)}
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button
-          variant="text"
-          onClick={() => {
-            onCancel();
-            setBill(new BillInfo());
-          }}
-        >
-          Cancel
-        </Button>
-        <Button
-          variant="text"
-          onClick={() => onConfirm(plainToInstance(BillInfo, { ...bill, date: bill.date.toISOString() }))}
-          disabled={
-            bill.amount === 0 ||
-            bill.description === "" ||
-            bill.lenders.length === 0 ||
-            bill.payer === "" ||
-            dateError
-          }
-        >
-          Done
-        </Button>
-      </DialogActions>
-    </Dialog>
+          <FormControl fullWidth required margin="dense">
+            <InputLabel variant="standard">Payer</InputLabel>
+            <Select
+              value={bill.payer}
+              required
+              variant="standard"
+              onChange={(e) => {
+                handlePayerChange(e.target.value);
+              }}
+              MenuProps={MenuProps}
+            >
+              {members.map((v) => (
+                <MenuItem className="h-[54px]" value={v} key={v}>
+                  {v}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <CheckmarksSelect
+            value={bill.lenders}
+            options={members}
+            label="Lenders"
+            onChange={(value) => handleLendersChange(value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button
+            variant="text"
+            onClick={() => {
+              onCancel();
+              setBill(new BillInfo());
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="text"
+            onClick={() => {
+              onConfirm(
+                plainToInstance(BillInfo, {
+                  ...bill,
+                  date: bill.date.toISOString(),
+                }),
+              );
+              setIsSnackbarOpen(true);
+            }}
+            disabled={
+              bill.amount === 0 ||
+              bill.description === "" ||
+              bill.lenders.length === 0 ||
+              bill.payer === "" ||
+              dateError
+            }
+          >
+            Done
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={isSnackbarOpen}
+        autoHideDuration={SNACKBAR_HIDE_DURATION}
+        onClose={() => setIsSnackbarOpen(false)}
+      >
+        <Alert variant="outlined" severity="success">
+          Updated the bill list
+        </Alert>
+      </Snackbar>
+    </>
   );
 };
 

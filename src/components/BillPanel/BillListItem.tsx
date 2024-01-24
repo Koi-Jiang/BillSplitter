@@ -10,14 +10,15 @@ export interface BillListItemArgs {
   billInfo: BillInfo;
   onDetailOpen: (billInfo: BillInfo) => void;
   onEditOpen: (billInfo: BillInfo) => void;
+  handleDeleteBillAlert: () => void;
 }
 
 const BillListItem: FC<BillListItemArgs> = ({
   billInfo,
   onDetailOpen,
   onEditOpen,
+  handleDeleteBillAlert,
 }) => {
-
   const lendToStr = useMemo(
     () =>
       billInfo.lenders.length > 2
@@ -62,7 +63,12 @@ const BillListItem: FC<BillListItemArgs> = ({
       <IconButton onClick={() => onEditOpen(billInfo)}>
         <EditIcon />
       </IconButton>
-      <DeleteIconButton onDelete={() => deleteBill(billInfo.id)}/>
+      <DeleteIconButton
+        onDelete={() => {
+          deleteBill(billInfo.id);
+          handleDeleteBillAlert();
+        }}
+      />
     </ListItem>
   );
 };
