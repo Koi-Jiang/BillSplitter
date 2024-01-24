@@ -65,7 +65,7 @@ const router = createBrowserRouter([
     path: "/:roomId",
     element: <RoomPage />,
   },
-]);
+], { basename: "/BillSplitter" });
 
 // Globally extend dayjs format
 dayjs.extend(localizedFormat);
