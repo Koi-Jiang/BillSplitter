@@ -1,21 +1,18 @@
 import {
-  Alert,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  Snackbar,
-  Typography,
 } from "@mui/material";
-import { FC, useState } from "react";
+import { FC, useContext, useState } from "react";
 import ValidatedTextField from "../common/ValidatedTextField";
-import { SNACKBAR_HIDE_DURATION } from "../../utils/constants";
+import { SnackbarContext } from "../../contexts/SnackbarContextProvider";
 
 export interface MemberAddArgs {
   isOpen: boolean;
   onCancel: () => void;
-  onConfirm: (memberName: string) => boolean;
+  onConfirm: (memberName: string) => Promise<boolean>;
 }
 
 const MemberAddDialog: FC<MemberAddArgs> = ({
@@ -23,17 +20,17 @@ const MemberAddDialog: FC<MemberAddArgs> = ({
   onCancel,
   onConfirm,
 }) => {
+  const { openSnackbar } = useContext(SnackbarContext);
   const [memberName, setMemberName] = useState<string>("");
-  const [isSuccessSnackbarOpen, setIsSuccessSnackbarOpen] =
-    useState<boolean>(false);
-  const [isErrorSnackbarOpen, setIsErrorSnackbarOpen] =
-    useState<boolean>(false);
 
-  function handleAddMember() {
+  async function handleAddMember() {
     const isMemberAdded = onConfirm(memberName.trim());
     setMemberName("");
-    setIsSuccessSnackbarOpen(isMemberAdded);
-    setIsErrorSnackbarOpen(!isMemberAdded);
+    if (await isMemberAdded) {
+      openSnackbar("Added a new member");
+    } else {
+      openSnackbar("Failed to add a new member", "error");
+    }
   }
 
   return (
@@ -76,28 +73,6 @@ const MemberAddDialog: FC<MemberAddArgs> = ({
           </Button>
         </DialogActions>
       </Dialog>
-      <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        open={isSuccessSnackbarOpen}
-        autoHideDuration={SNACKBAR_HIDE_DURATION}
-        onClose={() => setIsSuccessSnackbarOpen(false)}
-      >
-        <Alert variant="outlined" severity="success">
-          <Typography component="p">Added a new member</Typography>
-        </Alert>
-      </Snackbar>
-      <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        open={isErrorSnackbarOpen}
-        autoHideDuration={SNACKBAR_HIDE_DURATION}
-        onClose={() => setIsErrorSnackbarOpen(false)}
-      >
-        <Alert variant="outlined" severity="error">
-          <Typography component="p">
-            Cannnot add a member already exists
-          </Typography>
-        </Alert>
-      </Snackbar>
     </>
   );
 };

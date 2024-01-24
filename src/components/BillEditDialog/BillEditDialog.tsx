@@ -1,5 +1,4 @@
 import {
-  Alert,
   Button,
   Dialog,
   DialogActions,
@@ -9,8 +8,6 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  Snackbar,
-  Typography,
 } from "@mui/material";
 import { FC, useContext, useEffect, useState } from "react";
 import MoneyInput from "../MoneyInput/MoneyInput";
@@ -21,7 +18,6 @@ import dayjs, { Dayjs } from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers";
 import { GlobalContext } from "../../contexts/GlobalContext";
 import { plainToInstance } from "class-transformer";
-import { SNACKBAR_HIDE_DURATION } from "../../utils/constants";
 
 const MenuProps = {
   PaperProps: {
@@ -78,8 +74,6 @@ const BillEditDialog: FC<BillEditArgs> = ({
 
   const [dateError, setDateError] = useState<boolean>(false);
   const { members } = useContext(GlobalContext);
-
-  const [isSnackbarOpen, setIsSnackbarOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (!isOpen) {
@@ -174,7 +168,6 @@ const BillEditDialog: FC<BillEditArgs> = ({
                   date: bill.date.toISOString(),
                 }),
               );
-              setIsSnackbarOpen(true);
             }}
             disabled={
               bill.amount === 0 ||
@@ -188,16 +181,6 @@ const BillEditDialog: FC<BillEditArgs> = ({
           </Button>
         </DialogActions>
       </Dialog>
-      <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        open={isSnackbarOpen}
-        autoHideDuration={SNACKBAR_HIDE_DURATION}
-        onClose={() => setIsSnackbarOpen(false)}
-      >
-        <Alert variant="outlined" severity="success">
-          <Typography component="p">Updated the bill list</Typography>
-        </Alert>
-      </Snackbar>
     </>
   );
 };

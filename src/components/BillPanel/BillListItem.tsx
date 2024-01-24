@@ -5,19 +5,18 @@ import { BillInfo } from "../../utils/billInfo";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIconButton from "../common/DeleteIconButton/DeleteIconButton";
 import { GlobalContext } from "../../contexts/GlobalContext";
+import { SnackbarContext } from "../../contexts/SnackbarContextProvider";
 
 export interface BillListItemArgs {
   billInfo: BillInfo;
   onDetailOpen: (billInfo: BillInfo) => void;
   onEditOpen: (billInfo: BillInfo) => void;
-  handleDeleteBillAlert: () => void;
 }
 
 const BillListItem: FC<BillListItemArgs> = ({
   billInfo,
   onDetailOpen,
   onEditOpen,
-  handleDeleteBillAlert,
 }) => {
   const lendToStr = useMemo(
     () =>
@@ -29,10 +28,11 @@ const BillListItem: FC<BillListItemArgs> = ({
   );
 
   const { palette } = useTheme();
-  const { deleteBill } = useContext(GlobalContext)!;
+  const { deleteBill, isEditableLink } = useContext(GlobalContext)!;
+  const { openSnackbar } = useContext(SnackbarContext);
 
   return (
-    <ListItem>
+    <ListItem className="hover:opacity-70">
       <ListItemText
         className="cursor-pointer"
         onClick={() => onDetailOpen(billInfo)}
@@ -60,15 +60,23 @@ const BillListItem: FC<BillListItemArgs> = ({
           className: "md:text-[34px] text-2xl",
         }}
       />
-      <IconButton onClick={() => onEditOpen(billInfo)}>
-        <EditIcon />
-      </IconButton>
-      <DeleteIconButton
-        onDelete={() => {
-          deleteBill(billInfo.id);
-          handleDeleteBillAlert();
-        }}
-      />
+      {isEditableLink && 
+        <>
+          <IconButton onClick={() => onEditOpen(billInfo)}>
+            <EditIcon />
+          </IconButton>
+          <DeleteIconButton
+            onDelete={async () => {
+              const success = await deleteBill(billInfo.id);
+              if (success) {
+                openSnackbar("Successfully deleted this bill");
+              } else {
+                openSnackbar("Failed to delete this bill", "error");
+              }
+            }}
+          />
+        </>
+      }
     </ListItem>
   );
 };

@@ -11,14 +11,12 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
-  Snackbar,
-  Alert,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import SettingsIcon from "@mui/icons-material/Settings";
 import ShareIcon from "@mui/icons-material/Share";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
-import { useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import MemberPanel from "../MemberPanel/MemberPanel";
@@ -29,8 +27,8 @@ import GlobalContextProvider, {
 } from "../../contexts/GlobalContext";
 import LinkDisplayDialog from "../LinkDisplayDialog/LinkDisplayDialog";
 import RenameRoomDialog from "../RenameRoomDialog/RanameRoomDialog";
-import { SNACKBAR_HIDE_DURATION } from "../../utils/constants";
 import DeleteConfirmDialog from "../common/DeleteConfirmDialog";
+import { SnackbarContext } from "../../contexts/SnackbarContextProvider";
 
 function RoomPage() {
   const theme = useTheme();
@@ -52,7 +50,7 @@ function RoomPage() {
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
     useState<boolean>(false);
 
-  const [isSnackbarOpen, setIsSnackbarOpen] = useState<boolean>(false);
+  const { openSnackbar } = useContext(SnackbarContext);
 
   function handleCopyLink(editable: boolean, link: string) {
     setLinkDisplayOpen(true);
@@ -83,21 +81,30 @@ function RoomPage() {
                 </GlobalContext.Consumer>
               </Typography>
             </div>
-            <IconButton
-              className="flex-none"
-              size="large"
-              ref={shareMenuAnchor}
-              onClick={() => setShareMenuOpen(true)}
-            >
-              <ShareIcon />
-            </IconButton>
-            <Menu
-              anchorEl={shareMenuAnchor.current}
-              open={shareMenuOpen}
-              onClose={() => setShareMenuOpen(false)}
-            >
-              <GlobalContext.Consumer>
-                {(context) => (
+
+            <GlobalContext.Consumer>
+              {(context) => (<>
+                {
+                  !context.isEditableLink && (
+                    <Typography variant="h6" component="p">
+                      Read-only
+                    </Typography>
+                  )
+                }
+
+                <IconButton
+                  className="flex-none"
+                  size="large"
+                  ref={shareMenuAnchor}
+                  onClick={() => setShareMenuOpen(true)}
+                >
+                  <ShareIcon />
+                </IconButton>
+                <Menu
+                  anchorEl={shareMenuAnchor.current}
+                  open={shareMenuOpen}
+                  onClose={() => setShareMenuOpen(false)}
+                >
                   <MenuItem
                     onClick={() => {
                       handleCopyLink(
@@ -112,58 +119,65 @@ function RoomPage() {
                     </ListItemIcon>
                     <ListItemText> Copy Read-only Link </ListItemText>
                   </MenuItem>
-                )}
-              </GlobalContext.Consumer>
+                  {
+                    context.isEditableLink &&
+                    <MenuItem
+                      onClick={() => {
+                        handleCopyLink(true, window.location.href);
+                        setShareMenuOpen(false);
+                      }}
+                    >
+                      <ListItemIcon>
+                        <EditIcon fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText> Copy Editable Link </ListItemText>
+                    </MenuItem>
+                  }
+                </Menu>
 
-              <MenuItem
-                onClick={() => {
-                  handleCopyLink(true, window.location.href);
-                  setShareMenuOpen(false);
-                }}
-              >
-                <ListItemIcon>
-                  <EditIcon fontSize="small" />
-                </ListItemIcon>
-                <ListItemText> Copy Editable Link </ListItemText>
-              </MenuItem>
-            </Menu>
-
-            <IconButton
-              className="flex-none"
-              size="large"
-              ref={settingMenuAnchor}
-              onClick={() => setSettingMenuOpen(true)}
-            >
-              <SettingsIcon />
-            </IconButton>
-            <Menu
-              anchorEl={settingMenuAnchor.current}
-              open={settingMenuOpen}
-              onClose={() => setSettingMenuOpen(false)}
-            >
-              <MenuItem
-                onClick={() => {
-                  setIsRenameDialogOpen(true);
-                  setSettingMenuOpen(false);
-                }}
-              >
-                <ListItemIcon>
-                  <EditIcon fontSize="small" />
-                </ListItemIcon>
-                <ListItemText> Rename Room </ListItemText>
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  setIsConfirmDialogOpen(true);
-                  setSettingMenuOpen(false);
-                }}
-              >
-                <ListItemIcon>
-                  <RestartAltIcon fontSize="small" />
-                </ListItemIcon>
-                <ListItemText> Reset Room </ListItemText>
-              </MenuItem>
-            </Menu>
+                {
+                  context.isEditableLink && (
+                    <>
+                      <IconButton
+                        className="flex-none"
+                        size="large"
+                        ref={settingMenuAnchor}
+                        onClick={() => setSettingMenuOpen(true)}
+                      >
+                        <SettingsIcon />
+                      </IconButton>
+                      <Menu
+                        anchorEl={settingMenuAnchor.current}
+                        open={settingMenuOpen}
+                        onClose={() => setSettingMenuOpen(false)}
+                      >
+                        <MenuItem
+                          onClick={() => {
+                            setIsRenameDialogOpen(true);
+                            setSettingMenuOpen(false);
+                          }}
+                        >
+                          <ListItemIcon>
+                            <EditIcon fontSize="small" />
+                          </ListItemIcon>
+                          <ListItemText> Rename Room </ListItemText>
+                        </MenuItem>
+                        <MenuItem
+                          onClick={() => {
+                            setIsConfirmDialogOpen(true);
+                            setSettingMenuOpen(false);
+                          }}
+                        >
+                          <ListItemIcon>
+                            <RestartAltIcon fontSize="small" />
+                          </ListItemIcon>
+                          <ListItemText> Reset Room </ListItemText>
+                        </MenuItem>
+                      </Menu>
+                    </>)
+                }
+              </>)}
+            </GlobalContext.Consumer>
           </Toolbar>
         </AppBar>
 
@@ -218,25 +232,19 @@ function RoomPage() {
         {(context) => (
           <DeleteConfirmDialog
             isOpen={isConfirmDialogOpen}
-            onDelete={() => {
-              context.resetRoom();
-              setIsSnackbarOpen(true);
+            onDelete={async () => {
+              const success = await context.resetRoom();
+              if (success) {
+                openSnackbar("Room reseted successfully");
+              } else {
+                openSnackbar("Failed to reset room", "error");
+              }
             }}
             onCancel={() => setIsConfirmDialogOpen(false)}
             message="Are you sure you want to reset your room? All the bills and members will be removed"
           />
         )}
       </GlobalContext.Consumer>
-      <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        open={isSnackbarOpen}
-        autoHideDuration={SNACKBAR_HIDE_DURATION}
-        onClose={() => setIsSnackbarOpen(false)}
-      >
-        <Alert variant="outlined" severity="success">
-          Reseted all members and bills
-        </Alert>
-      </Snackbar>
     </GlobalContextProvider>
   );
 }

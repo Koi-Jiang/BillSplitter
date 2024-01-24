@@ -21,6 +21,7 @@ import localizedFormat from "dayjs/plugin/localizedFormat";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import "reflect-metadata";
+import SnackbarContextProvider from "./contexts/SnackbarContextProvider";
 
 const breakpoints = {
   values: {
@@ -74,8 +75,10 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <StyledEngineProvider injectFirst>
         <ThemeProvider theme={darkTheme}>
-          <CssBaseline />
-          <RouterProvider router={router} />
+          <SnackbarContextProvider>
+            <CssBaseline />
+            <RouterProvider router={router} />
+          </SnackbarContextProvider>
         </ThemeProvider>
       </StyledEngineProvider>
     </LocalizationProvider>

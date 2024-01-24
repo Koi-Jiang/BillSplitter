@@ -1,5 +1,4 @@
 import {
-  Alert,
   Button,
   Dialog,
   DialogActions,
@@ -7,13 +6,11 @@ import {
   DialogTitle,
   IconButton,
   InputAdornment,
-  Snackbar,
   TextField,
-  Typography,
 } from "@mui/material";
-import { FC, useState } from "react";
+import { FC, useContext } from "react";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import { SNACKBAR_HIDE_DURATION } from "../../utils/constants";
+import { SnackbarContext } from "../../contexts/SnackbarContextProvider";
 
 export interface LinkDisplayDialogArgs {
   link: string;
@@ -28,7 +25,7 @@ const LinkDisplayDialog: FC<LinkDisplayDialogArgs> = ({
   isOpen,
   onCancel,
 }) => {
-  const [isSnackbarOpen, setIsSnackbarOpen] = useState<boolean>(false);
+  const { openSnackbar } = useContext(SnackbarContext);
 
   return (
     <>
@@ -49,7 +46,7 @@ const LinkDisplayDialog: FC<LinkDisplayDialogArgs> = ({
                   <IconButton
                     onClick={() => {
                       navigator.clipboard.writeText(link);
-                      setIsSnackbarOpen(true);
+                      openSnackbar("Copied to clipboard");
                     }}
                     edge="end"
                   >
@@ -67,16 +64,6 @@ const LinkDisplayDialog: FC<LinkDisplayDialogArgs> = ({
           </Button>
         </DialogActions>
       </Dialog>
-      <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        open={isSnackbarOpen}
-        autoHideDuration={SNACKBAR_HIDE_DURATION}
-        onClose={() => setIsSnackbarOpen(false)}
-      >
-        <Alert variant="outlined" severity="success">
-          <Typography component="p">Copied to clipboard</Typography>
-        </Alert>
-      </Snackbar>
     </>
   );
 };

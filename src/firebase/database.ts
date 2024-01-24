@@ -112,53 +112,57 @@ export async function getRoomData(id: string): Promise<{
 }
 
 // delete room by editable id
-export async function deleteRoomData(id: string) {
-  if (id.length === READONLY_ID_LENGTH) return;
+export async function deleteRoomData(id: string): Promise<boolean> {
+  if (id.length === READONLY_ID_LENGTH) return false;
   const d = doc(roomsCollection, id);
   await deleteDoc(d);
-  return;
+  return true;
 }
 
 // rename room
-export async function renameRoomData(id: string, newName: string) {
-  if (id.length === READONLY_ID_LENGTH) return;
+export async function renameRoomData(id: string, newName: string): Promise<boolean> {
+  if (id.length === READONLY_ID_LENGTH) return false;
   const d = doc(roomsCollection, id);
   await updateDoc(d, { roomName: newName });
+  return true;
 }
 
 // add member
-export async function addMemberData(id: string, name: string) {
-  console.log(id);
-  if (id.length === READONLY_ID_LENGTH) return;
+export async function addMemberData(id: string, name: string): Promise<boolean> {
+  if (id.length === READONLY_ID_LENGTH) return false;
   const d = doc(roomsCollection, id);
-  console.log(d);
   await updateDoc(d, { members: arrayUnion(name) });
+  return true;
 }
 
 // delete member
-export async function deleteMemberData(id: string, name: string) {
-  if (id.length === READONLY_ID_LENGTH) return;
+export async function deleteMemberData(id: string, name: string): Promise<boolean> {
+  if (id.length === READONLY_ID_LENGTH) return false;
   const d = doc(roomsCollection, id);
   await updateDoc(d, { members: arrayRemove(name) });
+  return true;
 }
 
 // delete all members (can only be called when bill list is empty)
-export async function deleteAllMemberData(id: string) {
-  if (id.length === READONLY_ID_LENGTH) return;
+export async function deleteAllMemberData(id: string): Promise<boolean> {
+  if (id.length === READONLY_ID_LENGTH) return false;
   const d = doc(roomsCollection, id);
   await updateDoc(d, { members: [] });
+  return true;
 }
 
 // add bill
-export async function updateBillData(id: string, b: BillInfo[]) {
-  if (id.length === READONLY_ID_LENGTH) return;
+export async function updateBillData(id: string, b: BillInfo[]): Promise<boolean> {
+  if (id.length === READONLY_ID_LENGTH) return false;
   const d = doc(roomsCollection, id);
   await updateDoc(d, { billInfos: instanceToPlain(b) });
+  return true;
 }
 
 // delete all bills
-export async function deleteAllBillData(id: string) {
-  if (id.length === READONLY_ID_LENGTH) return;
+export async function deleteAllBillData(id: string): Promise<boolean> {
+  if (id.length === READONLY_ID_LENGTH) return false;
   const d = doc(roomsCollection, id);
   await updateDoc(d, { billInfos: [] });
+  return true;
 }

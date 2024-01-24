@@ -25,13 +25,13 @@ export interface GlobalContextArgs {
   members: string[];
   bills: BillInfo[];
   transactions: Transaction[];
-  addMember: (member: string) => boolean;
-  deleteMember: (member: string) => boolean;
-  updateBill: (billInfo: BillInfo) => void;
-  deleteBill: (id: string) => void;
-  deleteAllBills: () => void;
-  renameRoom: (newName: string) => void;
-  resetRoom: () => void;
+  addMember: (member: string) => Promise<boolean>;
+  deleteMember: (member: string) => Promise<boolean>;
+  updateBill: (billInfo: BillInfo) => Promise<boolean>;
+  deleteBill: (id: string) => Promise<boolean>;
+  deleteAllBills: () => Promise<boolean>;
+  renameRoom: (newName: string) => Promise<boolean>;
+  resetRoom: () => Promise<boolean>;
   isEditableLink: boolean;
   roomName: string;
   readonlyId: string;
@@ -72,16 +72,18 @@ const GlobalContextProvider: FC<PropsWithChildren> = ({ children }) => {
     loadRoomData();
   }, []);
 
-  function addMember(member: string): boolean {
+  async function addMember(member: string): Promise<boolean> {
     if (memberSet.has(member)) {
       return false;
     }
-    setMemberSet(memberSet.add(member));
-    addMemberData(roomLink, member);
-    return true;
+    const success = await addMemberData(roomLink, member);
+    if (success) {
+      setMemberSet(memberSet.add(member));
+    }
+    return success;
   }
 
-  const deleteMember = (member: string) => {
+  const deleteMember = async (member: string) => {
     // check if the member is the payer or lender of any bill
     for (const bill of billMap.values()) {
       if (bill.payer === member || bill.lenders.includes(member)) {
@@ -92,40 +94,57 @@ const GlobalContextProvider: FC<PropsWithChildren> = ({ children }) => {
 
     // NOTE: parse in a function to make sure v is the newest state and
     //       set the state to the returned value
-    setMemberSet((v) => v.delete(member));
-    deleteMemberData(roomLink, member);
-    return true;
+    const success = await deleteMemberData(roomLink, member);
+    if (success) {
+      setMemberSet((v) => v.delete(member));
+    }
+    return success;
   };
 
-  function updateBill(billInfo: BillInfo) {
+  async function updateBill(billInfo: BillInfo) {
     const newBills = billMap.set(billInfo.id, billInfo);
-    setBillMap(newBills);
-    updateBillData(roomLink, newBills.valueSeq().toArray());
+    const success = await updateBillData(roomLink, newBills.valueSeq().toArray());
+    if (success) {
+      setBillMap(newBills);
+    }
+    return success;
   }
 
-  function deleteBill(id: string) {
-    setBillMap((v) => {
-      const newMap = v.delete(id);
-      updateBillData(roomLink, newMap.valueSeq().toArray());
-      return newMap;
-    });
+  async function deleteBill(id: string) {
+    const success = await updateBillData(roomLink, newMap.valueSeq().toArray());
+    if (success) {
+      setBillMap((v) => {
+        const newMap = v.delete(id);
+        return newMap;
+      });
+    }
+    return success;
   }
 
-  function deleteAllBills() {
-    setBillMap(Map<string, BillInfo>({}));
-    deleteAllBillData(roomLink);
+  async function deleteAllBills() {
+    const success = await deleteAllBillData(roomLink);
+    if (success) {
+      setBillMap(Map<string, BillInfo>({}));
+    }
+    return success;
   }
 
-  function renameRoom(newName: string) {
-    renameRoomData(roomLink, newName);
-    setRoomName(newName);
+  async function renameRoom(newName: string) {
+    const success = await renameRoomData(roomLink, newName);
+    if (success) {
+      setRoomName(newName);
+    }
+    return success;
   }
 
-  function resetRoom() {
-    setBillMap(Map<string, BillInfo>({}));
-    deleteAllBillData(roomLink);
-    setMemberSet(OrderedSet([]));
-    deleteAllMemberData(roomLink);
+  async function resetRoom() {
+    const success = 
+      await deleteAllBillData(roomLink) && await deleteAllMemberData(roomLink);
+    if (success) {
+      setBillMap(Map<string, BillInfo>({}));
+      setMemberSet(OrderedSet([]));
+    }
+    return success;
   }
 
   function calcResults(): Transaction[] {
@@ -157,6 +176,11 @@ const GlobalContextProvider: FC<PropsWithChildren> = ({ children }) => {
 
     // 4. sort the positive and negative list so that the first element
     //    is the one with the largest amount
+    
+    if (!group[1] || !group[-1]) {
+      return [];
+    }
+
     const posList = group[1].toSorted((a, b) => Math.sign(b[1] - a[1]));
     const negList = group[-1].toSorted((a, b) => Math.sign(a[1] - b[1]));
 

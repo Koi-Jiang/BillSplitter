@@ -3,21 +3,25 @@ import { FC, useContext } from "react";
 import Avatar from "boring-avatars";
 import DeleteIconButton from "../common/DeleteIconButton/DeleteIconButton";
 import { GlobalContext } from "../../contexts/GlobalContext";
+import { SnackbarContext } from "../../contexts/SnackbarContextProvider";
 
 export interface MemberListItemArgs {
   name: string;
-  handleDeleteMemberAlert: (isMemberDeteled: boolean) => void;
 }
 
 const MemberListItem: FC<MemberListItemArgs> = ({
   name,
-  handleDeleteMemberAlert,
 }) => {
-  const { deleteMember } = useContext(GlobalContext)!;
+  const { deleteMember, isEditableLink } = useContext(GlobalContext)!;
+  const { openSnackbar } = useContext(SnackbarContext);
 
-  function tryDeleteMember(name: string) {
-    const isMemberDeteled = deleteMember(name);
-    handleDeleteMemberAlert(isMemberDeteled);
+  async function tryDeleteMember(name: string) {
+    const isMemberDeteled = await deleteMember(name);
+    if (isMemberDeteled) {
+      openSnackbar("Successfully deleted member");
+    } else {
+      openSnackbar("Cannot delete a member in existing bills", "error");
+    }
   }
 
   return (
@@ -40,7 +44,7 @@ const MemberListItem: FC<MemberListItemArgs> = ({
         }}
         className="ml-4"
       />
-      <DeleteIconButton onDelete={() => tryDeleteMember(name)} />
+      { isEditableLink && <DeleteIconButton onDelete={() => tryDeleteMember(name)} /> }
     </ListItem>
   );
 };
