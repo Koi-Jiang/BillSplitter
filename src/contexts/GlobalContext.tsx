@@ -28,7 +28,7 @@ export interface GlobalContextArgs {
   addMember: (member: string) => Promise<boolean>;
   deleteMember: (member: string) => Promise<boolean>;
   updateBill: (billInfo: BillInfo) => Promise<boolean>;
-  deleteBill: (id: string) => Promise<boolean>;
+  deleteBill: (id: string) => void;
   deleteAllBills: () => Promise<boolean>;
   renameRoom: (newName: string) => Promise<boolean>;
   resetRoom: () => Promise<boolean>;
@@ -111,14 +111,13 @@ const GlobalContextProvider: FC<PropsWithChildren> = ({ children }) => {
   }
 
   async function deleteBill(id: string) {
-    const success = await updateBillData(roomLink, newMap.valueSeq().toArray());
-    if (success) {
+    if (isEditableLink) {
       setBillMap((v) => {
         const newMap = v.delete(id);
-        return newMap;
+        updateBillData(roomLink, newMap.valueSeq().toArray());
+        return v;
       });
     }
-    return success;
   }
 
   async function deleteAllBills() {

@@ -5,7 +5,6 @@ import { BillInfo } from "../../utils/billInfo";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIconButton from "../common/DeleteIconButton/DeleteIconButton";
 import { GlobalContext } from "../../contexts/GlobalContext";
-import { SnackbarContext } from "../../contexts/SnackbarContextProvider";
 
 export interface BillListItemArgs {
   billInfo: BillInfo;
@@ -29,7 +28,6 @@ const BillListItem: FC<BillListItemArgs> = ({
 
   const { palette } = useTheme();
   const { deleteBill, isEditableLink } = useContext(GlobalContext)!;
-  const { openSnackbar } = useContext(SnackbarContext);
 
   return (
     <ListItem className="hover:opacity-70">
@@ -66,13 +64,8 @@ const BillListItem: FC<BillListItemArgs> = ({
             <EditIcon />
           </IconButton>
           <DeleteIconButton
-            onDelete={async () => {
-              const success = await deleteBill(billInfo.id);
-              if (success) {
-                openSnackbar("Successfully deleted this bill");
-              } else {
-                openSnackbar("Failed to delete this bill", "error");
-              }
+            onDelete={() => {
+              deleteBill(billInfo.id);
             }}
           />
         </>
