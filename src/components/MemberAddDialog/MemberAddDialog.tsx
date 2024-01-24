@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogTitle,
   Snackbar,
+  Typography,
 } from "@mui/material";
 import { FC, useState } from "react";
 import ValidatedTextField from "../common/ValidatedTextField";
@@ -82,7 +83,7 @@ const MemberAddDialog: FC<MemberAddArgs> = ({
         onClose={() => setIsSuccessSnackbarOpen(false)}
       >
         <Alert variant="outlined" severity="success">
-          Added a new member
+          <Typography component="p">Added a new member</Typography>
         </Alert>
       </Snackbar>
       <Snackbar
@@ -92,7 +93,9 @@ const MemberAddDialog: FC<MemberAddArgs> = ({
         onClose={() => setIsErrorSnackbarOpen(false)}
       >
         <Alert variant="outlined" severity="error">
-          Cannnot add a member already exists
+          <Typography component="p">
+            Cannnot add a member already exists
+          </Typography>
         </Alert>
       </Snackbar>
     </>

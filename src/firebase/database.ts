@@ -18,12 +18,10 @@ import { app } from ".";
 import { BillInfo } from "../utils/billInfo";
 import { nanoid } from "nanoid";
 import { instanceToPlain, plainToInstance } from "class-transformer";
+import { EDITABLE_ID_LENGTH, READONLY_ID_LENGTH } from "../utils/constants";
 
 const firestore = getFirestore(app);
 const roomsCollection = collection(firestore, "rooms");
-
-const EDITABLE_ID_LENGTH = 16;
-const READONLY_ID_LENGTH = 17;
 
 export interface RoomDocument {
   readonlyId: string;
@@ -77,10 +75,8 @@ export async function createRoomData(name: string): Promise<string> {
   return editableId;
 }
 
-// get room by ro id / editable id -> all info + isEditable
-export async function getRoomData(
-  id: string,
-): Promise<{
+// get room by room id / editable id -> all info + isEditable
+export async function getRoomData(id: string): Promise<{
   room: Omit<RoomDocument, "billInfos"> & { billInfos: BillInfo[] };
   editable: boolean;
 } | null> {
@@ -138,15 +134,31 @@ export async function addMemberData(id: string, name: string) {
   console.log(d);
   await updateDoc(d, { members: arrayUnion(name) });
 }
+
 // delete member
 export async function deleteMemberData(id: string, name: string) {
   if (id.length === READONLY_ID_LENGTH) return;
   const d = doc(roomsCollection, id);
   await updateDoc(d, { members: arrayRemove(name) });
 }
+
+// delete all members (can only be called when bill list is empty)
+export async function deleteAllMemberData(id: string) {
+  if (id.length === READONLY_ID_LENGTH) return;
+  const d = doc(roomsCollection, id);
+  await updateDoc(d, { members: [] });
+}
+
 // add bill
 export async function updateBillData(id: string, b: BillInfo[]) {
   if (id.length === READONLY_ID_LENGTH) return;
   const d = doc(roomsCollection, id);
   await updateDoc(d, { billInfos: instanceToPlain(b) });
+}
+
+// delete all bills
+export async function deleteAllBillData(id: string) {
+  if (id.length === READONLY_ID_LENGTH) return;
+  const d = doc(roomsCollection, id);
+  await updateDoc(d, { billInfos: [] });
 }

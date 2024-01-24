@@ -1,13 +1,27 @@
-import { Alert, AppBar, IconButton, List, Snackbar, Toolbar, Typography } from "@mui/material";
+import {
+  Alert,
+  AppBar,
+  IconButton,
+  List,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+  Snackbar,
+  Toolbar,
+  Typography,
+} from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import AddIcon from "@mui/icons-material/Add";
 import BillListItem from "./BillListItem";
 import BillEditDialog from "../BillEditDialog/BillEditDialog";
-import { useContext, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import BillDetailDialog from "../BillDetailDialog/BillDetailDialog";
 import { BillInfo } from "../../utils/billInfo";
 import { GlobalContext } from "../../contexts/GlobalContext";
 import { SNACKBAR_HIDE_DURATION } from "../../utils/constants";
+import DeleteConfirmDialog from "../common/DeleteConfirmDialog";
 
 // FIX:
 
@@ -34,11 +48,20 @@ function BillPanel() {
     setIsEditOpen(true);
   }
 
-  const [isSnackbarOpen, setIsSnackbarOpen] = useState<boolean>(false);
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
+    useState<boolean>(false);
+
+  const [isDeleteSnackbarOpen, setIsDeleteSnackbarOpen] =
+    useState<boolean>(false);
+  const [isDeleteAllSnackbarOpen, setIsDeleteAllSnackbarOpen] =
+    useState<boolean>(false);
 
   function handleDeleteBillAlert() {
-    setIsSnackbarOpen(true);
+    setIsDeleteSnackbarOpen(true);
   }
+
+  const menuAnchor = useRef<HTMLButtonElement>(null);
+  const [menuOpen, setMenuOpen] = useState<boolean>(false);
 
   return (
     <>
@@ -50,9 +73,34 @@ function BillPanel() {
           <IconButton onClick={() => setIsEditOpen(true)}>
             <AddIcon />
           </IconButton>
-          <IconButton>
+          <IconButton ref={menuAnchor} onClick={() => setMenuOpen(true)}>
             <MoreVertIcon />
           </IconButton>
+          <Menu
+            anchorEl={menuAnchor.current}
+            open={menuOpen}
+            onClose={() => setMenuOpen(false)}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "right",
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+          >
+            <MenuItem
+              onClick={() => {
+                setIsConfirmDialogOpen(true);
+                setMenuOpen(false);
+              }}
+            >
+              <ListItemIcon>
+                <DeleteForeverIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText> Delete All Bills </ListItemText>
+            </MenuItem>
+          </Menu>
         </Toolbar>
       </AppBar>
       <List>
@@ -84,14 +132,33 @@ function BillPanel() {
         onCancel={() => setIsDetailOpen(false)}
         billInfo={billDetailInfo}
       />
+      <DeleteConfirmDialog
+        isOpen={isConfirmDialogOpen}
+        onDelete={() => {
+          globalContext.deleteAllBills();
+          setIsDeleteAllSnackbarOpen(true);
+        }}
+        onCancel={() => setIsConfirmDialogOpen(false)}
+        message="Are you sure you want to permanently delete all your bills?"
+      />
       <Snackbar
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        open={isSnackbarOpen}
+        open={isDeleteSnackbarOpen}
         autoHideDuration={SNACKBAR_HIDE_DURATION}
-        onClose={() => setIsSnackbarOpen(false)}
+        onClose={() => setIsDeleteSnackbarOpen(false)}
       >
         <Alert variant="outlined" severity="success">
-          Deleted a bill
+          <Typography component="p">Deleted a bill</Typography>
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={isDeleteAllSnackbarOpen}
+        autoHideDuration={SNACKBAR_HIDE_DURATION}
+        onClose={() => setIsDeleteAllSnackbarOpen(false)}
+      >
+        <Alert variant="outlined" severity="success">
+          <Typography component="p">Deleted all bills</Typography>
         </Alert>
       </Snackbar>
     </>

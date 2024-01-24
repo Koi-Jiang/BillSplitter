@@ -11,6 +11,8 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -27,6 +29,8 @@ import GlobalContextProvider, {
 } from "../../contexts/GlobalContext";
 import LinkDisplayDialog from "../LinkDisplayDialog/LinkDisplayDialog";
 import RenameRoomDialog from "../RenameRoomDialog/RanameRoomDialog";
+import { SNACKBAR_HIDE_DURATION } from "../../utils/constants";
+import DeleteConfirmDialog from "../common/DeleteConfirmDialog";
 
 function RoomPage() {
   const theme = useTheme();
@@ -45,6 +49,10 @@ function RoomPage() {
   const [shareLink, setShareLink] = useState<string>("");
 
   const [isRenameDialogOpen, setIsRenameDialogOpen] = useState<boolean>(false);
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
+    useState<boolean>(false);
+
+  const [isSnackbarOpen, setIsSnackbarOpen] = useState<boolean>(false);
 
   function handleCopyLink(editable: boolean, link: string) {
     setLinkDisplayOpen(true);
@@ -91,12 +99,13 @@ function RoomPage() {
               <GlobalContext.Consumer>
                 {(context) => (
                   <MenuItem
-                    onClick={() =>
+                    onClick={() => {
                       handleCopyLink(
                         false,
                         window.location.origin + "/" + context.readonlyId,
-                      )
-                    }
+                      );
+                      setShareMenuOpen(false);
+                    }}
                   >
                     <ListItemIcon>
                       <VisibilityIcon fontSize="small" />
@@ -107,7 +116,10 @@ function RoomPage() {
               </GlobalContext.Consumer>
 
               <MenuItem
-                onClick={() => handleCopyLink(true, window.location.href)}
+                onClick={() => {
+                  handleCopyLink(true, window.location.href);
+                  setShareMenuOpen(false);
+                }}
               >
                 <ListItemIcon>
                   <EditIcon fontSize="small" />
@@ -129,13 +141,23 @@ function RoomPage() {
               open={settingMenuOpen}
               onClose={() => setSettingMenuOpen(false)}
             >
-              <MenuItem onClick={() => setIsRenameDialogOpen(true)}>
+              <MenuItem
+                onClick={() => {
+                  setIsRenameDialogOpen(true);
+                  setSettingMenuOpen(false);
+                }}
+              >
                 <ListItemIcon>
                   <EditIcon fontSize="small" />
                 </ListItemIcon>
                 <ListItemText> Rename Room </ListItemText>
               </MenuItem>
-              <MenuItem>
+              <MenuItem
+                onClick={() => {
+                  setIsConfirmDialogOpen(true);
+                  setSettingMenuOpen(false);
+                }}
+              >
                 <ListItemIcon>
                   <RestartAltIcon fontSize="small" />
                 </ListItemIcon>
@@ -192,6 +214,29 @@ function RoomPage() {
         isOpen={isRenameDialogOpen}
         onClose={() => setIsRenameDialogOpen(false)}
       />
+      <GlobalContext.Consumer>
+        {(context) => (
+          <DeleteConfirmDialog
+            isOpen={isConfirmDialogOpen}
+            onDelete={() => {
+              context.resetRoom();
+              setIsSnackbarOpen(true);
+            }}
+            onCancel={() => setIsConfirmDialogOpen(false)}
+            message="Are you sure you want to reset your room? All the bills and members will be removed"
+          />
+        )}
+      </GlobalContext.Consumer>
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={isSnackbarOpen}
+        autoHideDuration={SNACKBAR_HIDE_DURATION}
+        onClose={() => setIsSnackbarOpen(false)}
+      >
+        <Alert variant="outlined" severity="success">
+          Reseted all members and bills
+        </Alert>
+      </Snackbar>
     </GlobalContextProvider>
   );
 }

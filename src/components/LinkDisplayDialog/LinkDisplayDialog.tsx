@@ -9,6 +9,7 @@ import {
   InputAdornment,
   Snackbar,
   TextField,
+  Typography,
 } from "@mui/material";
 import { FC, useState } from "react";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
@@ -73,7 +74,7 @@ const LinkDisplayDialog: FC<LinkDisplayDialogArgs> = ({
         onClose={() => setIsSnackbarOpen(false)}
       >
         <Alert variant="outlined" severity="success">
-          Copied to clipboard
+          <Typography component="p">Copied to clipboard</Typography>
         </Alert>
       </Snackbar>
     </>

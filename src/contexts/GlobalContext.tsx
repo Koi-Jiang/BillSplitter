@@ -12,6 +12,8 @@ import { Transaction } from "../utils/transaction";
 import _ from "lodash";
 import {
   addMemberData,
+  deleteAllBillData,
+  deleteAllMemberData,
   deleteMemberData,
   getRoomData,
   renameRoomData,
@@ -23,11 +25,13 @@ export interface GlobalContextArgs {
   members: string[];
   bills: BillInfo[];
   transactions: Transaction[];
-  renameRoom: (newName: string) => void;
   addMember: (member: string) => boolean;
   deleteMember: (member: string) => boolean;
   updateBill: (billInfo: BillInfo) => void;
   deleteBill: (id: string) => void;
+  deleteAllBills: () => void;
+  renameRoom: (newName: string) => void;
+  resetRoom: () => void;
   isEditableLink: boolean;
   roomName: string;
   readonlyId: string;
@@ -68,11 +72,6 @@ const GlobalContextProvider: FC<PropsWithChildren> = ({ children }) => {
     loadRoomData();
   }, []);
 
-  function renameRoom(newName: string) {
-    renameRoomData(roomLink, newName);
-    setRoomName(newName);
-  }
-
   function addMember(member: string): boolean {
     if (memberSet.has(member)) {
       return false;
@@ -110,6 +109,23 @@ const GlobalContextProvider: FC<PropsWithChildren> = ({ children }) => {
       updateBillData(roomLink, newMap.valueSeq().toArray());
       return newMap;
     });
+  }
+
+  function deleteAllBills() {
+    setBillMap(Map<string, BillInfo>({}));
+    deleteAllBillData(roomLink);
+  }
+
+  function renameRoom(newName: string) {
+    renameRoomData(roomLink, newName);
+    setRoomName(newName);
+  }
+
+  function resetRoom() {
+    setBillMap(Map<string, BillInfo>({}));
+    deleteAllBillData(roomLink);
+    setMemberSet(OrderedSet([]));
+    deleteAllMemberData(roomLink);
   }
 
   function calcResults(): Transaction[] {
@@ -215,12 +231,14 @@ const GlobalContextProvider: FC<PropsWithChildren> = ({ children }) => {
         members,
         bills,
         transactions,
-        renameRoom,
         addMember,
         deleteMember,
         updateBill,
         deleteBill,
+        deleteAllBills,
         isEditableLink,
+        resetRoom,
+        renameRoom,
         roomName,
         readonlyId,
       }}

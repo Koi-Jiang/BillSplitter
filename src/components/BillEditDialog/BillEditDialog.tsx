@@ -10,6 +10,7 @@ import {
   MenuItem,
   Select,
   Snackbar,
+  Typography,
 } from "@mui/material";
 import { FC, useContext, useEffect, useState } from "react";
 import MoneyInput from "../MoneyInput/MoneyInput";
@@ -194,7 +195,7 @@ const BillEditDialog: FC<BillEditArgs> = ({
         onClose={() => setIsSnackbarOpen(false)}
       >
         <Alert variant="outlined" severity="success">
-          Updated the bill list
+          <Typography component="p">Updated the bill list</Typography>
         </Alert>
       </Snackbar>
     </>

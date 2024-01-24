@@ -70,7 +70,7 @@ function MemberPanel() {
         onClose={() => setIsSuccessSnackbarOpen(false)}
       >
         <Alert variant="outlined" severity="success">
-          Deleted a member
+          <Typography component="p">Deleted a member</Typography>
         </Alert>
       </Snackbar>
       <Snackbar
@@ -80,7 +80,9 @@ function MemberPanel() {
         onClose={() => setIsErrorSnackbarOpen(false)}
       >
         <Alert variant="outlined" severity="error">
-          Cannot delete a member in existing bills
+          <Typography component="p">
+            Cannot delete a member in existing bills
+          </Typography>
         </Alert>
       </Snackbar>
     </>
