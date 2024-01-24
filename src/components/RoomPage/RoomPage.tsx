@@ -109,7 +109,7 @@ function RoomPage() {
                     onClick={() => {
                       handleCopyLink(
                         false,
-                        window.location.origin + "/" + context.readonlyId,
+                        (window.location.origin + window.location.pathname).split("/").slice(0,-1).join("/") + "/" + context.readonlyId,
                       );
                       setShareMenuOpen(false);
                     }}
