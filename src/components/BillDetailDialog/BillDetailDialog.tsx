@@ -28,7 +28,7 @@ const BillDetailDialog: FC<BillEditArgs> = ({ billInfo, isOpen, onCancel }) => {
     <Dialog open={isOpen} maxWidth="sm" fullWidth onClose={onCancel}>
       <DialogActions className="absolute right-0">
         <IconButton onClick={onCancel}>
-          <CloseIcon fontSize="large"/>
+          <CloseIcon fontSize="large" />
         </IconButton>
       </DialogActions>
       <DialogContent className="p-9">
@@ -46,12 +46,14 @@ const BillDetailDialog: FC<BillEditArgs> = ({ billInfo, isOpen, onCancel }) => {
           </Typography>
         </Box>
         <Box component="div" className="my-2 flex flex-row items-center">
-          <Avatar
-            size={48}
-            name={billInfo.payer}
-            variant="beam"
-            colors={["#5b36c2", "#6f53d1", "#866ddf", "#9d85ed", "#b69efa"]}
-          />
+          <div className="flex-none">
+            <Avatar
+              size={48}
+              name={billInfo.payer}
+              variant="beam"
+              colors={["#5b36c2", "#6f53d1", "#866ddf", "#9d85ed", "#b69efa"]}
+            />
+          </div>
           <Typography
             component="p"
             variant="h6"
@@ -77,18 +79,20 @@ const BillDetailDialog: FC<BillEditArgs> = ({ billInfo, isOpen, onCancel }) => {
                 component="div"
                 className="my-4 flex flex-row items-center"
               >
-                <Avatar
-                  size={48}
-                  name={v}
-                  variant="beam"
-                  colors={[
-                    "#5b36c2",
-                    "#6f53d1",
-                    "#866ddf",
-                    "#9d85ed",
-                    "#b69efa",
-                  ]}
-                />
+                <div className="flex-none">
+                  <Avatar
+                    size={48}
+                    name={v}
+                    variant="beam"
+                    colors={[
+                      "#5b36c2",
+                      "#6f53d1",
+                      "#866ddf",
+                      "#9d85ed",
+                      "#b69efa",
+                    ]}
+                  />
+                </div>
                 <Typography
                   component="p"
                   variant="h6"
